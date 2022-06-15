@@ -1,5 +1,5 @@
 app:
-  title: SAILPOINT_BACKSTAGE
+  title: SailPoint Backstage
   baseUrl: http://localhost:3000
 
 organization:
@@ -74,7 +74,6 @@ auth:
         # deployment stages of the app
         # enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
   # see https://backstage.io/docs/auth/ to learn about auth providers
-  providers: {}
 
 scaffolder:
   # see https://backstage.io/docs/features/software-templates/configuration for software template options
