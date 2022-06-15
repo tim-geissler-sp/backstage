@@ -7,17 +7,16 @@ Custom implementation of the open-source developer dashboard toolkit and framewo
 2. ```yarn``` Installation
 
 ## Configuring GitHub SSO
-1. **Navigate to the [developer settings](https://github.com/settings/developers) on your SailPoint GitHub account.**
-2. **Open the** ```Personal access tokens``` **tab and select** ```Generate new token```.
-3. **Fill in your preferred details and click** ```Generate token```.
-4. **Copy and store the token as an environment variable in your** ```~/.bash_profile```.
-```GITHUB_TOKEN=[your_profile_access_token]```
-5. **Open the** ```OAuth Apps``` **tab and select** ```New OAuth App```.
-6. **Fill in the required details.**
+1. Navigate to the [developer settings](https://github.com/settings/developers) on your SailPoint GitHub account.
+2. Open the ```Personal access tokens``` tab and select ```Generate new token```.
+3. Fill in your preferred details and click ```Generate token```.
+4. Copy and store the token as an environment variable in your ```~/.bash_profile```.
+* ```GITHUB_TOKEN=[your_profile_access_token]```
+5. Open the ```OAuth Apps``` tab and select ```New OAuth App```.
+6. Fill in the required details.
 * Homepage URL ```https://localhost:3000```
 * Authorization callback URL ```https://localhost:7007/api/github/auth```
-7. **Copy the client ID and generate and copy the new client secret.**
-. **Store both tokens into their respective environment variables in your** ```~/.bash_profile```.
+7. Copy the client ID and generate and copy the new client secret. Store both tokens into their respective environment variables in your ```~/.bash_profile```.
 ```
 AUTH_GITHUB_CLIENT_ID=[your_client_id]
 AUTH_GITHUB_CLIENT_SECRET=[your_client_secret]
