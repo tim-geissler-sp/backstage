@@ -1,9 +1,9 @@
 app:
-  title: Scaffolded Backstage App
+  title: SAILPOINT_BACKSTAGE
   baseUrl: http://localhost:3000
 
 organization:
-  name: My Company
+  name: SailPoint
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
@@ -63,6 +63,16 @@ techdocs:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
 
 auth:
+  environment: development
+  providers:
+    github:
+      development:
+        clientId: ${AUTH_GITHUB_CLIENT_ID}
+        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+
+        # TODO: Field to be populated during
+        # deployment stages of the app
+        # enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
   # see https://backstage.io/docs/auth/ to learn about auth providers
   providers: {}
 
