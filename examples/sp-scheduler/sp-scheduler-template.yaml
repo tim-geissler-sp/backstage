@@ -49,7 +49,7 @@ spec:
       name: Fetch Base
       action: fetch:template
       input:
-        url: ./sp-scheduler
+        url: ./sp-scheduler-skeleton
         values:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
