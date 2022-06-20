@@ -9,7 +9,17 @@ Custom implementation of the open-source developer dashboard toolkit and framewo
 ## Configuring GitHub SSO
 1. Navigate to the [developer settings](https://github.com/settings/developers) on your SailPoint GitHub account.
 2. Open the ```Personal access tokens``` tab and select ```Generate new token```.
-3. Fill in your preferred details and click ```Generate token```.
+3. Fill in your preferred details and select the following scopes from the ```Select scopes``` section:
+
+```
+repo
+workflow
+read:org
+read:user
+user:email
+```
+
+4. Click ```Generate token```.
 4. Copy and store the token as an environment variable in your ```~/.bash_profile```.
 * ```GITHUB_TOKEN=[your_profile_access_token]```
 5. Open the ```OAuth Apps``` tab and select ```New OAuth App```.
