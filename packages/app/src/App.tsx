@@ -33,6 +33,9 @@ import { FlatRoutes } from '@backstage/core-app-api';
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+import {githubAuthApiRef} from '@backstage/core-plugin-api';
+
+import { SignInPage } from '@backstage/core-components';
 
 const app = createApp({
   apis,
@@ -50,6 +53,20 @@ const app = createApp({
     bind(orgPlugin.externalRoutes, {
       catalogIndex: catalogPlugin.routes.catalogIndex,
     });
+  },
+  components: {
+    SignInPage: props => (
+      <SignInPage
+        {...props}
+        auto
+        provider={{
+          id: 'github-auth-provider',
+            title: 'GitHub',
+            message: 'Sign in using your SailPoint login credentials with GitHub',
+          apiRef: githubAuthApiRef
+        }}
+      />
+    ),
   },
 });
 
