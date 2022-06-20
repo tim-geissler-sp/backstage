@@ -90,6 +90,12 @@ catalog:
       rules:
         - allow: [Template]
 
+    # test template 1
+    - type: file
+      target: ../../examples/sp-scheduler/sp-scheduler-template.yaml
+      rules:
+        - allow: [Template]
+
     # Local example organizational data
     - type: file
       target: ../../examples/org.yaml
