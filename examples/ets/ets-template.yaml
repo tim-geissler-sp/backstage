@@ -4,8 +4,8 @@ kind: Template
 # some metadata about the template itself
 metadata:
   name: v1beta3-demo
-  title: sp-scheduler Template
-  description: Generates a barebones project for the sp-scheduler service.
+  title: ETS Template
+  description: Generates a barebones project for the ets service.
 spec:
   owner: Sailpoint
   type: service
@@ -47,9 +47,9 @@ spec:
   steps:
     - id: fetch-base
       name: Fetch Base
-      action: fetch:plain
+      action: fetch:template
       input:
-        url: ./sp-scheduler-skeleton
+        url: ./ets-skeleton
         values:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
@@ -64,7 +64,6 @@ spec:
     - id: publish
       name: Publish
       action: publish:github
-      force: true
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}

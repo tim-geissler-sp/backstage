@@ -1,9 +1,9 @@
 app:
-  title: Scaffolded Backstage App
+  title: SailPoint Backstage
   baseUrl: http://localhost:3000
 
 organization:
-  name: Sailpoint
+  name: SailPoint
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
@@ -40,7 +40,7 @@ integrations:
     - host: github.com
       # This is a Personal Access Token or PAT from GitHub. You can find out how to generate this token, and more information
       # about setting up the GitHub integration here: https://backstage.io/docs/getting-started/configuration#setting-up-a-github-integration
-      token: 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 #personal TimG token
+      token: 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 #TDG
     ### Example for how to add your GitHub Enterprise instance using the API:
     # - host: ghe.example.net
     #   apiBaseUrl: https://ghe.example.net/api/v3
@@ -63,15 +63,20 @@ techdocs:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
 
 auth:
+  environment: development
+  providers:
+    github:
+      development:
+        clientId: e2ea1f1fbfc9491c21c7 #TDG
+        clientSecret: d4476c798c5200ac3fc0184f72d718a8c491a2d0 #TDG
+
+        # TODO: Field to be populated during
+        # deployment stages of the app
+        # enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
   # see https://backstage.io/docs/auth/ to learn about auth providers
-  providers: {}
 
 scaffolder:
   # see https://backstage.io/docs/features/software-templates/configuration for software template options
-  defaultAuthor:
-    name: T.Geissler # Defaults to `Scaffolder`
-    email: tim.geissler@sailpoint.com # Defaults to `scaffolder@backstage.io`
-  defaultCommitMessage: "From Backstage" # Defaults to 'Initial commit'
 
 catalog:
   import:
@@ -90,9 +95,13 @@ catalog:
       rules:
         - allow: [Template]
 
-    # test template 1
     - type: file
       target: ../../examples/sp-scheduler/sp-scheduler-template.yaml
+      rules:
+        - allow: [Template]
+
+    - type: file
+      target: ../../examples/ets/ets-template.yaml
       rules:
         - allow: [Template]
 
