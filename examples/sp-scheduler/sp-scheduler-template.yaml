@@ -4,7 +4,7 @@ kind: Template
 # some metadata about the template itself
 metadata:
   name: v1beta3-demo
-  title: sp-scheduler Template
+  title: sp-scheduler-template
   description: Generates a barebones project for the sp-scheduler service.
 spec:
   owner: Sailpoint
