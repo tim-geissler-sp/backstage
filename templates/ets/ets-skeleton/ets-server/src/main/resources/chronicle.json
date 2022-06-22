@@ -1,0 +1,8 @@
+{
+	"owner": "platform-core",
+	"description": "ETS (Event and Trigger Service) is a microservice that mediates event triggers between our SaaS services and external webhooks.",
+	"links": {
+		"github": "https://github.com/sailpoint/ets",
+		"jenkins construct": "https://construct.identitysoon.com/view/ETS/"
+	}
+}

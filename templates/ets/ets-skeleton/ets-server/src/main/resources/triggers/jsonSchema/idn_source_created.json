@@ -1,0 +1,81 @@
+{
+	"id": "idn:source-created",
+	"name": "Source Created",
+	"description": "A new source was created successfully.",
+	"type": "FIRE_AND_FORGET",
+	"eventSources": [
+		{
+			"topic": "SOURCE",
+			"eventType": "SOURCE_CREATED"
+		}
+	],
+	"inputSchema": {
+		"definitions": {
+			"record:SourceCreatedEvent": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"type",
+					"created",
+					"connector",
+					"actor"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					},
+					"created": {
+						"type": "string"
+					},
+					"connector": {
+						"type": "string"
+					},
+					"actor": {
+						"$ref": "#/definitions/record:Actor"
+					}
+				}
+			},
+			"record:Actor": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"type"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:SourceCreatedEvent"
+	},
+	"exampleInput": {
+		"id": "2c9180866166b5b0016167c32ef31a66",
+		"name": "Test source",
+		"type": "DIRECT_CONNECT",
+		"created": "2021-03-29T22:01:50.474Z",
+		"connector": "active-directory",
+		"actor": {
+			"id": "ee769173319b41d19ccec6cea52f237b",
+			"name": "john.doe",
+			"type": "IDENTITY"
+		}
+	}
+}

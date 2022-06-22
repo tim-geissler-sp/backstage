@@ -1,0 +1,95 @@
+{
+	"id": "idn:source-deleted",
+	"name": "Source Deleted",
+	"description": "A source was deleted successfully.",
+	"type": "FIRE_AND_FORGET",
+	"eventSources": [
+		{
+			"topic": "SOURCE",
+			"eventType": "SOURCE_DELETED"
+		}
+	],
+	"inputSchema": {
+		"definitions": {
+			"record:SourceDeletedEvent": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"type",
+					"deleted",
+					"connector",
+					"actor"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"deleted": {
+						"type": "string"
+					},
+					"connector": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"actor": {
+						"$ref": "#/definitions/record:Actor"
+					}
+				}
+			},
+			"record:Actor": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"type"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:SourceDeletedEvent"
+	},
+	"exampleInput": {
+		"id": "2c9180866166b5b0016167c32ef31a66",
+		"name": "Test source",
+		"type": "DIRECT_CONNECT",
+		"deleted": "2021-03-29T22:01:50.474Z",
+		"connector": "active-directory",
+		"actor": {
+			"id": "ee769173319b41d19ccec6cea52f237b",
+			"name": "john.doe",
+			"type": "IDENTITY"
+		}
+	}
+}

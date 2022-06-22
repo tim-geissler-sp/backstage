@@ -1,0 +1,15 @@
+{
+	"name": "Add Athena Audit Data Partitions",
+	"description": "Adds daily audit data partitions to athena audit table at 12:05 AM GMT",
+	"type": "rest",
+	"arguments": {
+		"path": "/audit/data/add-partitions",
+		"method": "POST",
+		"service": "AER"
+	},
+	"category": "Internal",
+	"cronExpressions": [
+		"0 05 00 * * ?"
+	],
+	"version": "1.1 (Org TimeZone Ready)"
+}

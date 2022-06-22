@@ -1,0 +1,541 @@
+{
+	"Saved Search Event": {
+		"template": "Search Event",
+		"event": {
+			"objects": [
+				"SAVED",
+				"SEARCH"
+			]
+		}
+	},
+	"Subscription Event": {
+		"template": "Search Event",
+		"event": {
+			"objects": [
+				"SUBSCRIPTION"
+			]
+		}
+	},
+	"User Search Event": {
+		"template": "Search Event",
+		"event": {
+			"actor": "null",
+			"attributes": "$",
+			"objects": [
+				"USER",
+				"SEARCH"
+			],
+			"operation": "EXECUTE"
+		}
+	},
+	"Search Event": {
+		"topic": "SEARCH",
+		"event": {
+			"type": "SYSTEM_CONFIG",
+			"actor.name": "$.actor.name",
+			"target.name": "system",
+			"stack": "sds",
+			"attributes": {
+				"name": "$.model.name",
+				"description": "$.model.description"
+			},
+			"status": "PASSED"
+		}
+	},
+	"Non-Employee Event": {
+		"topic": "NON_EMPLOYEE",
+		"event": {
+			"type": "NON_EMPLOYEE",
+			"objects": [
+				"NON_EMPLOYEE"
+			],
+			"target.name": "$.data.accountName",
+			"actor.name": "$.actorName",
+			"attributes": {
+				"sourceName": "$.application"
+			},
+			"stack": "$.stack",
+			"status": "PASSED"
+		}
+	},
+	"Non-Employee-Approval-Event": {
+		"topic": "NON_EMPLOYEE",
+		"event": {
+			"type": "NON_EMPLOYEE",
+			"objects": [
+				"NON_EMPLOYEE"
+			],
+			"target.name": "$.data.accountName",
+			"actor.name": "$.actorName",
+			"attributes": {
+				"sourceName": "$.application",
+				"comments": "$.data.comment"
+			},
+			"details": "$.data.approvalStatus",
+			"stack": "$.stack",
+			"status": "PASSED"
+		}
+	},
+	"Non-Employee Bulk Operation Event": {
+		"topic": "NON_EMPLOYEE",
+		"event": {
+			"type": "NON_EMPLOYEE",
+			"objects": [
+				"NON_EMPLOYEE",
+				"BULK"
+			],
+			"target.name": "$.data.sourceId",
+			"actor.name": "$.actorName",
+			"attributes": {
+				"sourceName": "$.application"
+			},
+			"stack": "$.stack"
+		}
+	},
+	"Non-Employee-Source-Event": {
+		"topic": "NON_EMPLOYEE",
+		"event": {
+			"type": "NON_EMPLOYEE",
+			"objects": [
+				"NON_EMPLOYEE",
+				"SOURCE"
+			],
+			"target.name": "$.data.name",
+			"actor.name": "$.actorName",
+			"attributes": {
+				"sourceName": "$.application"
+			},
+			"stack": "$.stack",
+			"details": "$.data.id",
+			"status": "PASSED"
+		}
+	},
+	"SAML SP JIT Configuration Event": {
+		"topic": "AUTHENTICATION",
+		"event": {
+			"type": "AUTH",
+			"objects": [
+				"SAML",
+				"JIT",
+				"CONFIGURATION"
+			],
+			"target.name": "$.data.idpEntityId",
+			"actor.name": "$.actorName",
+			"attributes": {
+				"sourceName": "$.application",
+				"jitEnabled": "$.data.data.enabled",
+				"jitSourceId": "$.data.data.sourceId"
+			},
+			"stack": "$.stack",
+			"status": "PASSED"
+		}
+	},
+	"SAML SP JIT Provisioning Event": {
+		"topic": "AUTHENTICATION",
+		"event": {
+			"type": "AUTH",
+			"objects": [
+				"SAML",
+				"JIT",
+				"PROVISIONING"
+			],
+			"target.name": "$.data.samlNameId",
+			"actor.name": "$.actorName",
+			"attributes": {
+				"sourceName": "$.application",
+				"userId": "$.data.userId"
+			},
+			"stack": "$.stack",
+			"status": "PASSED"
+		}
+	},
+	"Iai_Admin_Event": {
+		"topic": "IAI_ADMIN",
+		"event": {
+			"type": "IAI_ADMIN_AUDIT",
+			"target.name": "$.targetName",
+			"actor.name": "$.actor",
+			"attributes": {
+				"newObj": "$.data",
+				"objectType": "$.targetType",
+				"customerName": "$.customerName",
+				"customerId": "$.customerId",
+				"sourceName": "$.sourceApplication"
+			},
+			"details": "IAI Admin Audit events",
+			"stack": "ida-admin",
+			"status": "PASSED"
+		}
+	},
+	"IAI Pipeline Streaming Event": {
+		"topic" : "IAI_ADMIN",
+		"event": {
+			"type": "IAI_PIPELINE_STREAMING",
+			"actor.name": "$.actorName",
+			"target.name": "$.targetName",
+			"attributes": {
+				"qualifier" : "$.qualifier",
+				"dagId" : "$.dagId",
+				"details": "$.details"
+			},
+			"operation" : "$.operation",
+			"details": "IAI Data Pipeline Streaming Event",
+			"stack": "ida-data-processing",
+			"status": "$.status"
+		}
+	},
+	"IAI Pipeline Batch Event": {
+		"topic" : "IAI_ADMIN",
+		"event": {
+			"type": "IAI_PIPELINE_BATCH",
+			"actor.name": "$.actorName",
+			"target.name": "$.targetName",
+			"attributes": {
+				"qualifier" : "$.qualifier",
+				"dagId" : "$.dagId",
+				"details": "$.details"
+			},
+			"operation" : "$.operation",
+			"details": "IAI Data Pipeline Batch Event",
+			"stack": "ida-data-processing",
+			"status": "$.status"
+		}
+	},
+	"Certification Event": {
+		"topic": "CMS",
+		"event": {
+			"type": "CERTIFICATION",
+			"operation": "$.operation",
+			"target.name": "$.target",
+			"actor.name": "$.actor",
+			"attributes": {
+				"info": "$.info"
+			},
+			"stack": "cms",
+			"status": "PASSED"
+		}
+	},
+	"Auth Support Login Event": {
+		"topic": "AUTHENTICATION",
+		"event": {
+			"type": "AUTH",
+			"objects": [
+				"AUTH",
+				"SUPPORT",
+				"LOGIN"
+			],
+			"target.name": "$.data.authTenant",
+			"actor.name": "$.actorName",
+			"attributes": {
+				"sourceName": "$.application",
+				"authTenant": "$.data.authTenant",
+				"authUserName": "$.data.authUserName",
+				"role": "$.data.role",
+				"expirationDate": "$.data.expirationDate"
+			},
+			"stack": "$.stack",
+			"status": "PASSED"
+		}
+	},
+	"Support Login Token Issue Event": {
+		"topic": "AUTHENTICATION",
+		"event": {
+			"type": "AUTH",
+			"objects": [
+				"SUPPORT",
+				"LOGIN",
+				"TOKEN"
+			],
+			"target.name": "$.data.userId",
+			"actor.name": "$.actorName",
+			"attributes": {
+				"sourceName": "$.application",
+				"targetUsername": "$.data.targetUsername",
+				"targetTenant": "$.data.targetTenant"
+			},
+			"stack": "$.stack",
+			"operation": "ISSUE"
+		}
+	},
+	"Support Login Token Authentication Event": {
+		"topic": "AUTHENTICATION",
+		"event": {
+			"type": "AUTH",
+			"objects": [
+				"SUPPORT",
+				"LOGIN",
+				"TOKEN"
+			],
+			"target.name": "$.data.userId",
+			"actor.name": "$.actorName",
+			"attributes": {
+				"sourceName": "$.application",
+				"originOrg": "$.data.originOrg",
+				"originUsername": "$.data.originUsername"
+			},
+			"stack": "$.stack",
+			"operation": "AUTHENTICATE"
+		}
+	},
+	"Identity Provider Event": {
+		"topic": "AUTHENTICATION",
+		"event": {
+			"type": "AUTH",
+			"objects": [
+				"IDENTITY",
+				"PROVIDER",
+				"EXTERNAL"
+			],
+			"target.name": "$.data.idpEntityId",
+			"actor.name": "$.actorName",
+			"attributes": {
+				"sourceName": "$.application",
+				"hostName": "$.data.hostAddress"
+			},
+			"stack": "$.stack",
+			"status": "PASSED"
+		}
+	},
+	"Workflow Event": {
+		"topic": "WORKFLOW",
+		"event": {
+			"type": "WORKFLOW",
+			"objects": [
+				"WORKFLOW"
+			],
+			"target.name": "$.workflow.name",
+			"actor.name": "$.actor.name",
+			"attributes": {
+				"id": "$.workflow.id",
+				"name": "$.workflow.name",
+				"enabled": "$.enabled"
+			}
+		}
+	},
+	"Workflow Execution Event": {
+		"topic": "WORKFLOW",
+		"event": {
+			"type": "WORKFLOW",
+			"objects": [
+				"WORKFLOW"
+			],
+			"target.name": "$.workflowId",
+			"actor.name": "$.actor.name"
+		}
+	},
+	"Workflow Secrets Event": {
+		"topic": "WORKFLOW",
+		"event": {
+			"type": "WORKFLOW_SECRET",
+			"objects": [
+				"WORKFLOW_SECRET"
+			],
+			"target.name": "$.secretId",
+			"actor.name": "$.actor.name",
+			"status": "PASSED"
+		}
+	},
+	"Workflow Secrets Accessed Event": {
+		"topic": "WORKFLOW",
+		"event": {
+			"type": "WORKFLOW_SECRET",
+			"objects": [
+				"WORKFLOW_SECRET"
+			],
+			"target.name": "$.tenantId",
+			"actor.name": "$.actor.name",
+			"status": "PASSED"
+		}
+	},
+	"Personal Access Token Event": {
+		"topic": "AUTHENTICATION",
+		"event": {
+			"type": "AUTH",
+			"objects": [
+				"PERSONAL",
+				"ACCESS",
+				"TOKEN"
+			],
+			"target.name": "$.data.targetId",
+			"actor.name": "$.actorName",
+			"stack": "$.stack",
+			"status": "PASSED"
+		}
+	},
+	"Personal Access Token Event Failed": {
+		"topic": "AUTHENTICATION",
+		"event": {
+			"type": "AUTH",
+			"objects": [
+				"PERSONAL",
+				"ACCESS",
+				"TOKEN"
+			],
+			"target.name": "$.data.targetId",
+			"actor.name": "$.actorName",
+			"stack": "$.stack",
+			"status": "FAILED"
+		}
+	},
+	"MFA On Login Event": {
+		"topic": "AUTHENTICATION",
+		"event": {
+			"type": "AUTH",
+			"objects": [
+				"MFA",
+				"LOGIN"
+			],
+			"target.name": "$.data.userId",
+			"actor.name": "$.actorName",
+			"attributes": {
+				"sourceName": "$.application",
+				"hostName": "$.data.hostAddress"
+			},
+			"stack": "$.stack",
+			"operation": "AUTHENTICATE"
+		}
+	},
+	"MFA Registration Event": {
+		"topic": "AUTHENTICATION",
+		"event": {
+			"type": "AUTH",
+			"objects": [
+				"MFA",
+				"REGISTRATION"
+			],
+			"target.name": "$.data.targetId",
+			"actor.name": "$.actorName",
+			"attributes" : {
+				"hostName": "$.data.hostName",
+				"method": "$.data.method"
+			},
+			"stack": "$.stack",
+			"status": "PASSED"
+		}
+	},
+	"MFA Configuration Event": {
+		"topic": "AUTHENTICATION",
+		"event": {
+			"type": "PASSWORD_ACTIVITY",
+			"objects": [
+				"MFA",
+				"CONFIGURATION"
+			],
+			"target.name": "$.data.targetId",
+			"actor.name": "$.actorName",
+			"attributes" : {
+				"method": "$.data.method",
+				"info": "$.data.info"
+			},
+			"stack": "$.stack",
+			"status": "PASSED"
+		}
+	},
+	"Segment Event": {
+		"topic": "SEGMENT",
+		"event": {
+			"type": "SEGMENT",
+			"actor.name": "Segment",
+			"target.name": "$.segmentId",
+			"attributes": {
+				"id": "$.segmentId",
+				"name": "$.segment.name",
+				"description": "$.segment.description",
+				"sourceName": "$.stack",
+				"segment": "$.segment"
+			},
+			"stack": "$.stack",
+			"status": "PASSED",
+			"objects": [
+				"SEGMENT"
+			]
+		}
+	},
+	"Segment Update Event": {
+		"topic": "SEGMENT",
+		"event": {
+			"type": "SEGMENT",
+			"actor.name": "$.actorName",
+			"target.name": "$.data.targetId",
+			"attributes": {
+				"segmentId": "$.segmentId",
+				"object_type": "$.objectType",
+				"role_ids": "$.roleIds",
+				"access_profile_ids": "$.accessProfileIds",
+				"entitlement_ids": "$.entitlementIds"
+			},
+			"operation": "UPDATE",
+			"stack": "$.stack",
+			"status": "PASSED"
+		}
+	},
+	"Role Event": {
+		"topic": "ROLE",
+		"event": {
+			"type": "ROLE",
+			"actor.name": "Role",
+			"target.name": "$.data.id",
+			"attributes": {
+				"roleId": "$.id",
+				"name": "$.name",
+				"description": "$.description",
+				"enabled": "$.enabled",
+				"segment_Ids": "$.segments"
+			},
+			"operation": "UPDATE",
+			"stack": "$.stack",
+			"status": "PASSED"
+		}
+	},
+	"Access Profile Event": {
+		"topic": "ACCESS_PROFILE",
+		"event": {
+			"type": "ACCESS_PROFILE",
+			"actor.name": "Access Profile",
+			"target.name": "$.data.id",
+			"attributes": {
+				"accessProfileId": "$.id",
+				"name": "$.name",
+				"description": "$.description",
+				"enabled": "$.enabled",
+				"segment_Ids": "$.segments"
+			},
+			"operation": "UPDATE",
+			"stack": "$.stack",
+			"status": "PASSED"
+		}
+	},
+	"Capability Update Event": {
+		"topic": "AUTHENTICATION",
+		"type": "USER_MANAGEMENT",
+		"event": {
+			"actor.name": "$.actorName",
+			"target.name": "$.data.targetName",
+			"stack": "$.stack",
+			"status": "PASSED",
+			"attributes": {
+				"sourceName": "$.application",
+				"hostName": "$.data.hostAddress",
+				"capability": "$.data.capability"
+			}
+		}
+	},
+	"User Password Event": {
+		"topic": "AUTHENTICATION",
+		"event": {
+			"type": "AUTH",
+			"objects": [
+				"USER",
+				"PASSWORD"
+			],
+			"target.name": "$.data.userAlias",
+			"actor.name": "$.actorName",
+			"attributes": {
+				"sourceName": "$.application",
+				"lastPasswordChangeDate": "$.data.lastPasswordChangeDate"
+			},
+			"stack": "$.stack",
+			"status": "$.status"
+		}
+	}
+}

@@ -1,0 +1,146 @@
+/**
+ * Copyright (C) 2022 SailPoint Technologies, Inc.  All rights reserved.
+ */
+@Library("sailpoint/jenkins-release-utils")_
+
+def getModuleName() {
+    return params.podName == 'megapod-useast1-unstable' ? "$service" + '-unstable' : "$service"
+}
+
+def getNormalizedPodName() {
+    return params.podName == 'megapod-useast1-unstable' ? 'megapod-useast1' : params.podName
+}
+
+/*
+ * Based off https://github.com/sailpoint/saas-pipeline-templates/blob/main/templates/build-deploy-gradle-template/Jenkinsfile
+ * with customizations
+ */
+pipeline {
+
+    parameters {
+        string(name: 'branch', defaultValue: 'master', description: 'Branch to build')
+        string(name: 'podName', defaultValue: 'megapod-useast1', description: 'Pod to deploy to')
+    }
+
+    environment {
+       service = "aer"
+       gitRepo = "git@github.com:sailpoint/cloud-audit"
+       tasks = "clean build installDist"
+       imageRepo = "406205545357.dkr.ecr.us-east-1.amazonaws.com/sailpoint/aer"
+    }
+
+    agent {
+        kubernetes {
+            yaml "${libraryResource 'pods/testcontainers-jdk8-dev-large.yaml'}"
+        }
+    }
+
+    options {
+        timestamps()
+        timeout(time: 1, unit: 'HOURS')
+        buildDiscarder(logRotator(numToKeepStr: '15'))
+        disableConcurrentBuilds()
+        skipDefaultCheckout()
+    }
+
+    stages {
+        stage('Checkout SCM') {
+            steps {
+                script{
+                    def jobBranch = (branch) ? "$branch" : "$defaultBranch"
+                    echo "GIT ${gitRepo} @ ${jobBranch} ..."
+                    checkout(
+                            [$class: 'GitSCM',
+                             branches: [[name: jobBranch]],
+                             doGenerateSubmoduleConfigurations: false,
+                             extensions: [
+                                     [$class: 'CloneOption', timeout: 30],
+                                     [$class: 'AuthorInChangelog'],
+                                     [$class: 'CleanBeforeCheckout', deleteUntrackedNestedRepositories:true]
+                             ],
+                             submoduleCfg: [],
+                             userRemoteConfigs: [[
+                                                         credentialsId: 'git-automation-ssh',
+                                                         refspec: '+refs/tags/*:refs/remotes/origin/* +refs/heads/*:refs/remotes/origin/*',
+                                                         url: "${gitRepo}"]]])
+                }
+            }
+        }
+
+        stage('Gradle Build') {
+            steps {
+                echo "Gradle Build Started"
+
+                container('testcontainers') {
+                    assumePodRole {
+                        sh "aws ecr get-login-password | docker login --username AWS --password-stdin 406205545357.dkr.ecr.us-east-1.amazonaws.com"
+                        sh "TESTCONTAINERS_PULL_PAUSE_TIMEOUT=60 ./gradlew ${tasks} --refresh-dependencies -PcustomVersion=${env.BUILD_NUMBER} --info"
+                    }
+                }
+
+                echo "Gradle Build Finished"
+            }
+        }
+
+        stage('Docker Build & Push') {
+            steps {
+                echo "Docker Build Started"
+
+                container('kaniko') {
+                    // aer docker set up is a little different and the prod deploy depends on the same structure.
+                    sh """
+                cp dockerfiles/aer-server/Dockerfile aer-server/build/install
+                cd aer-server/build/install
+
+                /kaniko/executor \
+                --context . \
+                --dockerfile ./Dockerfile \
+                --skip-tls-verify \
+                --destination=${imageRepo}:${env.BUILD_NUMBER}
+            """
+                }
+
+                echo "Docker Build Finished"
+            }
+        }
+
+        stage('Create Git Tag') {
+            steps {
+                echo "Create Git Tag Started"
+
+                withCloudBeesCreds([credentialsId: 'git-automation-ssh']) {
+                    sh """
+                mkdir -m 700 -p ~/.ssh
+                touch ~/.ssh/known_hosts
+                ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+                git config url.git@github.com:.insteadOf https://github.com/
+                git config user.name 'git-automation-1'
+                git config user.email 'git-automation-1@sailpoint.com'
+                git tag -a -m '${service} build version ${env.BUILD_NUMBER}' cloudbees/${service}/${env.BUILD_NUMBER}
+                git push origin cloudbees/${service}/${env.BUILD_NUMBER}
+            """
+                }
+
+                echo "Create Git Tag Finished"
+            }
+        }
+
+        stage('Deploy') {
+            agent {
+                kubernetes {
+                    yaml "${libraryResource 'pods/build-container.yaml'}"
+                }
+            }
+
+            steps {
+                echo "Deploy of ${getModuleName()} to ${getNormalizedPodName()} Started"
+
+                container('release-utils') {
+                    sh "drydock_deploy.sh ${getNormalizedPodName()} ${getModuleName()} ${env.BUILD_NUMBER}"
+                }
+
+                echo "Deploy of  ${getModuleName()} to ${getNormalizedPodName()} Finished"
+            }
+        }
+    }
+}

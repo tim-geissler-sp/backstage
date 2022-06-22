@@ -1,0 +1,102 @@
+{
+	"id": "idn:source-updated",
+	"name": "Source Updated",
+	"description": "Configuration changes were made to a source.",
+	"type": "FIRE_AND_FORGET",
+	"eventSources": [
+		{
+			"topic": "SOURCE",
+			"eventType": "SOURCE_UPDATED"
+		}
+	],
+	"inputSchema": {
+		"definitions": {
+			"record:SourceUpdatedEvent": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"type",
+					"modified",
+					"connector",
+					"actor"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"modified": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"connector": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"actor": {
+						"$ref": "#/definitions/record:Actor"
+					}
+				}
+			},
+			"record:Actor": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"type"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:SourceUpdatedEvent"
+	},
+	"exampleInput": {
+		"id": "2c9180866166b5b0016167c32ef31a66",
+		"name": "Test source",
+		"type": "DIRECT_CONNECT",
+		"modified": "2021-03-29T22:01:50.474Z",
+		"connector": "active-directory",
+		"actor": {
+			"id": "ee769173319b41d19ccec6cea52f237b",
+			"name": "john.doe",
+			"type": "IDENTITY"
+		}
+	}
+}

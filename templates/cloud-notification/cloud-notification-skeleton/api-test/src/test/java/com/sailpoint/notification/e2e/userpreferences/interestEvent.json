@@ -1,0 +1,17 @@
+{
+	"notificationId": "5bbc16b9-9876-4cf3-91ea-71cd61ca498a",
+	"recipientId": "19983d18-78c1-4c10-85b3-dce050d7cd37",
+	"interestName": "Access Approval Request",
+	"categoryName": "email,slack,teams",
+	"enabled": "true",
+	"domainEvent": {
+		"headers": {
+			"pod": "dev",
+			"org": "acme-solar"
+		},
+		"id": "680ee45292df47fa858d0925023d3868",
+		"timestamp": "2018-11-08T10:21:00.668-06:00",
+		"type": "ACCESS_APPROVAL_REQUESTED",
+		"contentJson": "{\"content\": {\"approvers\": [{ \"id\": \"314cf125-f892-4b16-bcbb-bfe4afb01f85\",\"name\": \"james.smith\"}, {\"id\": \"70e7cde5-3473-46ea-94ea-90bc8c605a6c\", \"name\": \"jane.doe\" }], \"requester_id\": \"46ec3058-eb0a-41b2-8df8-1c3641e4d771\", \"requester_name\": \"boss.man\", \"accessItems\": [{ \"type\": \"ROLE\", \"name\": \"Engineering Administrator\" }] }  }"
+	}
+}

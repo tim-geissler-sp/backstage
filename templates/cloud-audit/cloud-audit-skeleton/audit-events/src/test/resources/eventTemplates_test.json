@@ -1,0 +1,40 @@
+{
+	"No Template Ref": {
+		"templates": [
+			"No Such Template",
+			"Template 1"
+		]
+	},
+	"Bad Template Ref": {
+		"templates": [
+			4,
+			"Template 2"
+		]
+	},
+	"Invalid Template Ref": {
+		"template": "Invalid Template"
+	},
+	"Invalid Template": [
+		"hello"
+	],
+	"Template 2": {
+		"event": {
+			"status": "status-2"
+		}
+	},
+	"Template 1": {
+		"event": {
+			"status": "status-1"
+		}
+	},
+	"Template 0": {
+		"event": {
+			"status": "status-0"
+		}
+	},
+	"Composite Expression": {
+		"event": {
+			"actor": "$.json.path.expression"
+		}
+	}
+}

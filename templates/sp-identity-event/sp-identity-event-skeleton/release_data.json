@@ -1,0 +1,30 @@
+{
+  "schema": 2,
+  "tests": [
+    {
+      "friendly_test_name": "sp-identity-event Canary tests",
+      "job_name": "sp-identity-event/sp-identity-event-verify-prod-atlantis",
+      "remote_server": "platform-core",
+      "release_stage": "canary",
+      "job_params": {}
+    },
+    {
+      "friendly_test_name": "sp-identity-event Prod tests",
+      "job_name": "sp-identity-event/sp-identity-event-verify-prod",
+      "remote_server": "platform-core",
+      "release_stage": "prod",
+      "job_params": {}
+    }
+  ],
+  "notifications": {
+    "slack": {
+      "rooms": [ "#team-eng-platform-core-jnk" ],
+      "failureRooms": [ "team-eng-platform-core" ]
+    },
+    "email": {
+      "addresses": [ "scrum-platform-core-services@sailpoint.com" ],
+      "emailOnlyOnFailure": true
+    }
+  },
+  "product": "SaaS Platform"
+}

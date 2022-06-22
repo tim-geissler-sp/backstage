@@ -1,0 +1,37 @@
+{
+	"id": "test:fire-and-forget",
+	"name": "Fire and Forget Test",
+	"description": "Example trigger for testing",
+	"type": "FIRE_AND_FORGET",
+	"eventSources": [
+		{
+			"topic": "INTERNAL_TEST",
+			"eventType": "ETS_INTERNAL_TEST"
+		}
+	],
+	"inputSchema": {
+		"definitions": {
+			"record:AccessRequestedInput": {
+				"type": "object",
+				"required": [
+					"identityId",
+					"approved"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"identityId": {
+						"type": "string"
+					},
+					"approved": {
+						"type": "boolean"
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:AccessRequestedInput"
+	},
+	"exampleInput": {
+		"identityId": "201327fda1c44704ac01181e963d463c",
+		"approved": true
+	}
+}

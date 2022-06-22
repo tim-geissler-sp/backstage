@@ -1,0 +1,200 @@
+{
+	"id": "idn:identity-attributes-changed",
+	"name": "Identity Attributes Changed",
+	"description": "One or more identity attributes changed.",
+	"type": "FIRE_AND_FORGET",
+	"eventSources": [
+		{
+			"topic": "IDENTITY_EVENT",
+			"eventType": "IdentityAttributesChangedEvent"
+		}
+	],
+	"inputSchema": {
+		"definitions": {
+			"record:IdentityAttributesChangedEvent": {
+				"type": "object",
+				"required": [
+					"identity",
+					"changes"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"identity": {
+						"$ref": "#/definitions/record:IdentityReference"
+					},
+					"changes": {
+						"default": [],
+						"type": "array",
+						"items": {
+							"$ref": "#/definitions/record:AttributeChange"
+						}
+					}
+				}
+			},
+			"record:IdentityReference": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"type"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					}
+				}
+			},
+			"record:AttributeChange": {
+				"type": "object",
+				"optional": ["oldValue", "newValue"],
+				"required": [
+					"attribute"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"attribute": {
+						"type": "string"
+					},
+					"oldValue": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							},
+							{
+								"type": "boolean"
+							},
+							{
+								"type": "array",
+								"items": {
+									"oneOf": [
+										{
+											"type": "null"
+										},
+										{
+											"type": "string"
+										}
+									]
+								}
+							},
+							{
+								"type": "object",
+								"additionalProperties": {
+									"oneOf": [
+										{
+											"type": "null"
+										},
+										{
+											"type": "string"
+										},
+										{
+											"type": "number"
+										},
+										{
+											"type": "integer"
+										},
+										{
+											"type": "boolean"
+										}
+									]
+								}
+							}
+						]
+					},
+					"newValue": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							},
+							{
+								"type": "boolean"
+							},
+							{
+								"type": "array",
+								"items": {
+									"oneOf": [
+										{
+											"type": "null"
+										},
+										{
+											"type": "string"
+										}
+									]
+								}
+							},
+							{
+								"type": "object",
+								"additionalProperties": {
+									"oneOf": [
+										{
+											"type": "null"
+										},
+										{
+											"type": "string"
+										},
+										{
+											"type": "number"
+										},
+										{
+											"type": "integer"
+										},
+										{
+											"type": "boolean"
+										}
+									]
+								}
+							}
+						]
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:IdentityAttributesChangedEvent"
+	},
+	"exampleInput": {
+		"identity": {
+			"id": "ee769173319b41d19ccec6cea52f237b",
+			"name": "john.doe",
+			"type": "IDENTITY"
+		},
+		"changes": [
+			{
+				"attribute": "department",
+				"oldValue": "sales",
+				"newValue": "marketing"
+			},
+			{
+				"attribute": "manager",
+				"oldValue": {
+					"id": "ee769173319b41d19ccec6c235423237b",
+					"name": "nice.guy",
+					"type": "IDENTITY"
+				},
+				"newValue": {
+					"id": "ee769173319b41d19ccec6c235423236c",
+					"name": "mean.guy",
+					"type": "IDENTITY"
+				}
+			},
+			{
+				"attribute": "email",
+				"oldValue": "john.doe@hotmail.com",
+				"newValue": "john.doe@gmail.com"
+			}
+		]
+	}
+}

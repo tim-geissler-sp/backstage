@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo "Generating DTO's for json schemas"
+python dto_generator.py
+git add ets-server/src/main/java/com/sailpoint/ets/domain/trigger/schemaGeneratedDto/*
+echo "Generated dto classes were auto added to the commit via pre commit"
+

@@ -1,0 +1,11 @@
+{
+  "versionTagTemplate": "jenkins/$version",
+  "dependencies": [{
+      "repository": "sailpoint/atlas",
+      "versionExtractor": {
+        "type": "propertyFile",
+        "file": "gradle.properties",
+        "key": "ATLAS_VERSION"
+      }
+    }]
+}

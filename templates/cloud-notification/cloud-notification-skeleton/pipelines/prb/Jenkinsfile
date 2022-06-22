@@ -1,0 +1,36 @@
+@Library('sailpoint/jenkins-release-utils')_
+
+pipeline {
+    agent {
+        kubernetes {
+            yaml "${libraryResource 'pods/testcontainers-jdk11-ubuntu-dev.yaml'}"
+        }
+    }
+
+    // You can find a full list of options here: https://www.jenkins.io/doc/book/pipeline/syntax/#options
+    options {
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '100'))
+        timeout(time: 1, unit: 'HOURS')
+    }
+
+    stages {
+        stage('Build & Test') {
+            steps {
+                container('testcontainers') {
+                    assumePodRole {
+                        sh './gradlew clean build --info'
+                    }
+                }
+            }
+        }
+
+        stage('Success') {
+            steps {
+                // The success stage is what github will require in order to mark the PRB as successful. It should
+                // always remain the last stage.
+                echo "PRB completed successfully."
+            }
+        }
+    }
+}

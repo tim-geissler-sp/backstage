@@ -1,0 +1,183 @@
+{
+	"id": "idn:access-request-pre-approval",
+	"name": "Access Request Submitted",
+	"description": "An access request to add or remove access from a user was submitted.",
+	"type": "REQUEST_RESPONSE",
+	"inputSchema": {
+		"definitions": {
+			"record:AccessRequestPreApprovalInput": {
+				"type": "object",
+				"required": [
+					"accessRequestId",
+					"requestedFor",
+					"requestedItems",
+					"requestedBy"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"accessRequestId": {
+						"type": "string"
+					},
+					"requestedFor": {
+						"$ref": "#/definitions/record:requestForIdentityRef"
+					},
+					"requestedItems": {
+						"type": "array",
+						"items": {
+							"$ref": "#/definitions/record:requestedObjectRef"
+						}
+					},
+					"requestedBy": {
+						"$ref": "#/definitions/record:requestByIdentityRef"
+					}
+				}
+			},
+			"record:requestForIdentityRef": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"type"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					}
+				}
+			},
+			"record:requestedObjectRef": {
+				"type": "object",
+				"optional" : ["description","comment"],
+				"required": [
+					"id",
+					"name",
+					"type",
+					"operation"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"type": {
+						"type": "string"
+					},
+					"operation": {
+						"type": "string"
+					},
+					"comment": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					}
+				}
+			},
+			"record:requestByIdentityRef": {
+				"type": "object",
+				"required": [
+					"type",
+					"id",
+					"name"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"type": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:AccessRequestPreApprovalInput"
+	},
+	"exampleInput": {
+		"accessRequestId": "4b4d982dddff4267ab12f0f1e72b5a6d",
+		"requestedItems": [
+			{
+				"id": "2c91808b6ef1d43e016efba0ce470904",
+				"name": "Engineering Access",
+				"description": "Engineering Access",
+				"type": "ACCESS_PROFILE",
+				"operation": "Add",
+				"comment": "Ed needs this access for his day to day job activities"
+			}
+		],
+		"requestedBy": {
+			"id": "2c91808b6ef1d43e016efba0ce470906",
+			"name": "Adam Admin",
+			"type": "IDENTITY"
+		},
+		"requestedFor": {
+			"id": "2c91808b6ef1d43e016efba0ce470909",
+			"name": "Ed Engineer",
+			"type": "IDENTITY"
+		}
+	},
+	"outputSchema": {
+		"definitions": {
+			"record:AccessRequestPreApprovalOutput": {
+				"type": "object",
+				"required": [
+					"approved",
+					"comment",
+					"approver"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"approved": {
+						"type": "boolean"
+					},
+					"comment": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"approver": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:AccessRequestPreApprovalOutput"
+	},
+	"exampleOutput": {
+		"approved": false,
+		"comment": "This access should be denied, because this will cause an SOD violation.",
+		"approver": "AcmeCorpExternalIntegration"
+	}
+}

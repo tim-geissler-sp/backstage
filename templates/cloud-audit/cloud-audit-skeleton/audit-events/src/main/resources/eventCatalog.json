@@ -1,0 +1,718 @@
+[
+	{
+		"template": "Saved Search Event",
+		"eventType": "SAVED_SEARCH_CREATE_PASSED",
+		"event": {
+			"operation": "CREATE"
+		}
+	},
+	{
+		"template": "Saved Search Event",
+		"eventType": "SAVED_SEARCH_UPDATE_PASSED",
+		"event": {
+			"operation": "UPDATE"
+		}
+	},
+	{
+		"template": "Saved Search Event",
+		"eventType": "SAVED_SEARCH_DELETE_PASSED",
+		"event": {
+			"operation": "DELETE"
+		}
+	},
+	{
+		"template": "Subscription Event",
+		"eventType": "SUBSCRIPTION_CREATE_PASSED",
+		"event": {
+			"operation": "CREATE"
+		}
+	},
+	{
+		"template": "Subscription Event",
+		"eventType": "SUBSCRIPTION_UPDATE_PASSED",
+		"event": {
+			"operation": "UPDATE"
+		}
+	},
+	{
+		"template": "Subscription Event",
+		"eventType": "SUBSCRIPTION_EXECUTE_STARTED",
+		"event": {
+			"operation": "EXECUTE",
+			"status": "STARTED"
+		}
+	},
+	{
+		"template": "Subscription Event",
+		"eventType": "SUBSCRIPTION_RECIPIENT_EXCLUDED",
+		"event": {
+			"attributes.excluded": "$.model.recipients",
+			"objects": [
+				"SUBSCRIPTION",
+				"RECIPIENT"
+			],
+			"operation": "EMAIL",
+			"status": "EXCLUDED"
+		}
+	},
+	{
+		"template": "Subscription Event",
+		"eventType": "SUBSCRIPTION_DELETE_PASSED",
+		"event": {
+			"operation": "DELETE"
+		}
+	},
+	{
+		"template": "User Search Event",
+		"eventType": "USER_SEARCH_PASSED"
+	},
+	{
+		"template": "User Search Event",
+		"eventType": "USER_SEARCH_FAILED",
+		"event": {
+			"status": "FAILED"
+		}
+	},
+	{
+		"template": "Non-Employee Event",
+		"eventType": "NON_EMPLOYEE_CREATE_PASSED",
+		"event": {
+			"operation": "CREATE"
+		}
+	},
+	{
+		"template": "Non-Employee Event",
+		"eventType": "NON_EMPLOYEE_UPDATE_PASSED",
+		"event": {
+			"operation": "UPDATE"
+		}
+	},
+	{
+		"template": "Non-Employee Event",
+		"eventType": "NON_EMPLOYEE_DELETE_PASSED",
+		"event": {
+			"operation": "DELETE"
+		}
+	},
+	{
+		"template": "Non-Employee-Approval-Event",
+		"eventType": "NON_EMPLOYEE_REQUEST_CREATED",
+		"event": {
+			"operation": "CREATE",
+			"objects": [
+				"NON_EMPLOYEE","REQUEST"
+			]
+		}
+	},
+	{
+		"template": "Non-Employee-Approval-Event",
+		"eventType": "NON_EMPLOYEE_REQUEST_ACTION_COMPLETED",
+		"event": {
+			"operation": "UPDATE",
+			"objects": [
+				"NON_EMPLOYEE","REQUEST"
+			]
+		}
+	},
+	{
+		"template": "Non-Employee-Approval-Event",
+		"eventType": "NON_EMPLOYEE_APPROVAL_ACTION_COMPLETED",
+		"event": {
+			"operation": "UPDATE",
+			"objects": [
+				"NON_EMPLOYEE","APPROVAL"
+			]
+		}
+	},
+	{
+		"template": "Non-Employee-Approval-Event",
+		"eventType": "NON_EMPLOYEE_REQUEST_DELETED",
+		"event": {
+			"operation": "DELETE",
+			"objects": [
+				"NON_EMPLOYEE","REQUEST"
+			]
+		}
+	},
+	{
+		"template": "Non-Employee Bulk Operation Event",
+		"eventType": "NON_EMPLOYEE_BULK_IMPORT_STARTED",
+		"event": {
+			"operation": "IMPORT",
+			"status": "STARTED"
+		}
+	},
+	{
+		"template": "Non-Employee Bulk Operation Event",
+		"eventType": "NON_EMPLOYEE_BULK_IMPORT_PASSED",
+		"event": {
+			"operation": "IMPORT",
+			"status": "PASSED"
+		}
+	},
+	{
+		"template": "Non-Employee Bulk Operation Event",
+		"eventType": "NON_EMPLOYEE_BULK_IMPORT_FAILED",
+		"event": {
+			"operation": "IMPORT",
+			"status": "FAILED"
+		}
+	},
+	{
+		"template": "Non-Employee Bulk Operation Event",
+		"eventType": "NON_EMPLOYEE_BULK_EXPORT_STARTED",
+		"event": {
+			"operation": "EXPORT",
+			"status": "STARTED"
+		}
+	},
+	{
+		"template": "Non-Employee Bulk Operation Event",
+		"eventType": "NON_EMPLOYEE_BULK_EXPORT_PASSED",
+		"event": {
+			"operation": "EXPORT",
+			"status": "PASSED"
+		}
+	},
+	{
+		"template": "Non-Employee Bulk Operation Event",
+		"eventType": "NON_EMPLOYEE_BULK_EXPORT_FAILED",
+		"event": {
+			"operation": "EXPORT",
+			"status": "FAILED"
+		}
+	},
+	{
+		"template": "Non-Employee-Source-Event",
+		"eventType": "NON_EMPLOYEE_SOURCE_CREATED",
+		"event": {
+			"operation": "CREATE"
+		}
+	},
+	{
+		"template": "Non-Employee-Source-Event",
+		"eventType": "NON_EMPLOYEE_SOURCE_UPDATED",
+		"event": {
+			"operation": "UPDATE"
+		}
+	},
+	{
+		"template": "Non-Employee-Source-Event",
+		"eventType": "NON_EMPLOYEE_SOURCE_DELETED",
+		"event": {
+			"operation": "DELETE"
+		}
+	},
+	{
+		"template": "SAML SP JIT Configuration Event",
+		"eventType": "SAML_JIT_CONFIGURATION_UPDATED",
+		"event": {
+			"operation": "UPDATE"
+		}
+	},
+	{
+		"template": "SAML SP JIT Provisioning Event",
+		"eventType": "SAML_JIT_USER_CREATED",
+		"event": {
+			"operation": "CREATE"
+		}
+	},
+	{
+		"template": "SAML SP JIT Provisioning Event",
+		"eventType": "SAML_JIT_USER_UPDATED",
+		"event": {
+			"operation": "UPDATE"
+		}
+	},
+	{
+		"template": "Support Login Token Issue Event",
+		"eventType": "SLPT_TOKEN_EXCHANGE",
+		"event": {
+			"status": "$.status"
+		}
+	},
+	{
+		"template": "Support Login Token Authentication Event",
+		"eventType": "SUPPORT_LOGIN_AUTHENTICATE",
+		"event": {
+			"status": "$.status"
+		}
+	},
+	{
+		"template": "Iai_Admin_Event",
+		"eventType": "IAI_ADMIN_CONFIG_UPDATE_EVENT",
+		"event": {
+			"operation": "UPDATE",
+			"objects": [
+				"IAI_ADMIN","CONFIG"
+			]
+		}
+	},
+	{
+		"template": "Iai_Admin_Event",
+		"eventType": "IAI_ADMIN_MAPPING_UPDATE_EVENT",
+		"event": {
+			"operation": "UPDATE",
+			"objects": [
+				"IAI_ADMIN","MAPPING_CONFIG"
+			]
+		}
+	},
+	{
+		"template": "Iai_Admin_Event",
+		"eventType": "IAI_ADMIN_DATA_SOURCE_UPDATE_EVENT",
+		"event": {
+			"operation": "UPDATE",
+			"objects": [
+				"IAI_ADMIN","DATASOURCE"
+			]
+		}
+	},
+	{
+		"template": "Iai_Admin_Event",
+		"eventType": "IAI_ADMIN_DATA_SOURCE_DELETE_EVENT",
+		"event": {
+			"operation": "DELETE",
+			"objects": [
+				"IAI_ADMIN","DATASOURCE"
+			]
+		}
+	},
+	{
+		"template": "Iai_Admin_Event",
+		"eventType": "IAI_ADMIN_CUSTOMER_UPDATE_EVENT",
+		"event": {
+			"operation": "UPDATE",
+			"objects": [
+				"IAI_ADMIN","CUSTOMER"
+			]
+		}
+	},
+	{
+		"template": "Iai_Admin_Event",
+		"eventType": "IAI_ADMIN_CUSTOMER_DELETE_EVENT",
+		"event": {
+			"operation": "DELETE",
+			"objects": [
+				"IAI_ADMIN","CUSTOMER"
+			]
+		}
+	},
+	{
+		"template": "IAI Pipeline Streaming Event",
+		"eventType": "IAI_PIPELINE_STREAMING",
+		"event": {
+			"objects": [
+				"IAI_PIPELINE", "STREAMING"
+			]
+		}
+	},
+	{
+		"template": "IAI Pipeline Batch Event",
+		"eventType": "IAI_PIPELINE_BATCH",
+		"event": {
+			"objects": [
+				"IAI_PIPELINE", "BATCH"
+			]
+		}
+	},
+	{
+		"template": "Certification Event",
+		"eventType": "CERTIFICATION_CAMPAIGN",
+		"event": {
+			"objects": [
+				"CERTIFICATION",
+				"CAMPAIGN"
+			]
+		}
+	},
+	{
+		"template": "Certification Event",
+		"eventType": "CAMPAIGN_FILTER",
+		"event": {
+			"objects": [
+				"CERTIFICATION",
+				"CAMPAIGN",
+				"FILTER"
+			]
+		}
+	},
+	{
+		"template": "Auth Support Login Event",
+		"eventType": "AUTH_SUPPORT_LOGIN_CREATED",
+		"event": {
+			"operation": "CREATE"
+		}
+	},
+	{
+		"template": "Auth Support Login Event",
+		"eventType": "AUTH_SUPPORT_LOGIN_UPDATED",
+		"event": {
+			"operation": "UPDATE"
+		}
+	},
+	{
+		"template": "Auth Support Login Event",
+		"eventType": "AUTH_SUPPORT_LOGIN_DELETED",
+		"event": {
+			"operation": "DELETE"
+		}
+	},
+	{
+		"template": "Identity Provider Event",
+		"eventType": "IDENTITY_PROVIDER_EXTERNAL_ENABLED",
+		"event": {
+			"operation": "ENABLE"
+		}
+	},
+	{
+		"template": "Identity Provider Event",
+		"eventType": "IDENTITY_PROVIDER_EXTERNAL_DISABLED",
+		"event": {
+			"operation": "DISABLE"
+		}
+	},
+	{
+		"template": "Workflow Event",
+		"eventType": "WORKFLOW_CREATED",
+		"event": {
+			"operation": "CREATE",
+			"status": "PASSED",
+			"actor.name": "$.workflow.creator.name"
+		}
+	},
+	{
+		"template": "Workflow Event",
+		"eventType": "WORKFLOW_DEFINITION_UPDATED",
+		"event": {
+			"objects": [
+				"WORKFLOW",
+				"DEFINITION"
+			],
+			"operation": "UPDATE",
+			"status": "PASSED"
+		}
+	},
+	{
+		"template": "Workflow Event",
+		"eventType": "WORKFLOW_OWNER_UPDATED",
+		"event": {
+			"objects": [
+				"WORKFLOW",
+				"OWNER"
+			],
+			"operation": "UPDATE",
+			"status": "PASSED",
+			"attributes": {
+				"oldOwner": "$.oldOwner.name",
+				"newOwner": "$.newOwner.name",
+				"id": "$.workflow.id",
+				"name": "$.workflow.name"
+			}
+		}
+	},
+	{
+		"template": "Workflow Event",
+		"eventType": "WORKFLOW_TRIGGER_UPDATED",
+		"event": {
+			"objects": [
+				"WORKFLOW",
+				"TRIGGER"
+			],
+			"operation": "UPDATE",
+			"status": "PASSED"
+		}
+	},
+	{
+		"template": "Workflow Event",
+		"eventType": "WORKFLOW_DELETED",
+		"event": {
+			"operation": "DELETE",
+			"status": "PASSED"
+		}
+	},
+	{
+		"template": "Workflow Event",
+		"eventType": "WORKFLOW_ENABLED",
+		"event": {
+			"operation": "ENABLE",
+			"status": "PASSED"
+		}
+	},
+	{
+		"template": "Workflow Event",
+		"eventType": "WORKFLOW_DISABLED",
+		"event": {
+			"operation": "DISABLE",
+			"status": "PASSED"
+		}
+	},
+	{
+		"template": "Workflow Execution Event",
+		"eventType": "WORKFLOW_EXECUTION_CANCELLED",
+		"event": {
+			"operation": "CANCELLED",
+			"status": "PASSED",
+			"attributes": {
+				"workflowExecutionId": "$.workflowExecutionId",
+				"remoteAddress": "$.remoteAddress"
+			}
+		}
+	},
+	{
+		"template": "Workflow Secrets Event",
+		"eventType": "WORKFLOW_SECRET_CREATED",
+		"event": {
+			"operation": "CREATE",
+			"attributes": {
+				"remoteAddress": "$.remoteAddress"
+			}
+		}
+	},
+	{
+		"template": "Workflow Secrets Accessed Event",
+		"eventType": "WORKFLOW_SECRETS_ACCESSED",
+		"event": {
+			"operation": "USE",
+			"attributes": {
+				"secretIds" : "$.secretIds",
+				"secretNames": "$.secretNames",
+				"remoteAddress": "$.remoteAddress"
+			}
+		}
+	},
+	{
+		"template": "Workflow Secrets Event",
+		"eventType": "WORKFLOW_SECRET_UPDATED",
+		"event": {
+			"operation": "UPDATE",
+			"attributes": {
+				"remoteAddress": "$.remoteAddress"
+			}
+		}
+	},
+	{
+		"template": "Workflow Secrets Event",
+		"eventType": "WORKFLOW_SECRET_DELETED",
+		"event": {
+			"operation": "DELETE",
+			"attributes": {
+				"remoteAddress": "$.remoteAddress"
+			}
+		}
+	},
+	{
+		"template": "Personal Access Token Event",
+		"eventType": "PERSONAL_ACCESS_TOKEN_CREATED",
+		"event": {
+			"operation": "CREATE"
+		}
+	},
+	{
+		"template": "Personal Access Token Event",
+		"eventType": "PERSONAL_ACCESS_TOKEN_DELETED",
+		"event": {
+			"operation": "DELETE"
+		}
+	},
+	{
+		"template": "Personal Access Token Event",
+		"eventType": "PERSONAL_ACCESS_TOKEN_USED",
+		"event": {
+			"operation": "USE",
+			"attributes": {
+				"hostName": "$.data.hostName",
+				"userId": "$.data.userId",
+				"scope": "$.data.scope"
+			}
+		}
+	},
+	{
+		"template": "Personal Access Token Event Failed",
+		"eventType": "PERSONAL_ACCESS_TOKEN_USE_FAILED",
+		"event": {
+			"operation": "USE",
+			"attributes": {
+				"hostName": "$.data.hostName",
+				"userId": "$.data.userId",
+				"cause": "$.data.cause",
+				"scope": "$.data.scope"
+			}
+		}
+	},
+	{
+		"template": "MFA On Login Event",
+		"eventType": "MFA_ON_LOGIN_AUTHENTICATE",
+		"event": {
+			"status": "$.status"
+		}
+	},
+	{
+		"template": "MFA Registration Event",
+		"eventType": "MFA_REGISTRATION_REGISTERED",
+		"event": {
+			"operation": "REGISTER"
+		}
+	},
+	{
+		"template": "MFA Registration Event",
+		"eventType": "MFA_REGISTRATION_RESET",
+		"event": {
+			"operation": "RESET"
+		}
+	},
+	{
+		"template": "MFA Configuration Event",
+		"eventType": "INTEGRATION_ENABLED",
+		"event": {
+			"operation": "ENABLE"
+		}
+	},
+	{
+		"template": "MFA Configuration Event",
+		"eventType": "INTEGRATION_DISABLED",
+		"event": {
+			"operation": "DISABLE"
+		}
+	},
+	{
+		"template": "Segment Event",
+		"eventType": "SEGMENT_CREATED",
+		"event": {
+			"operation": "CREATE"
+		}
+	},
+	{
+		"template": "Segment Event",
+		"eventType": "SEGMENT_UPDATED",
+		"event": {
+			"operation": "UPDATE"
+		}
+	},
+	{
+		"template": "Segment Event",
+		"eventType": "SEGMENT_DELETED",
+		"event": {
+			"operation": "DELETE"
+		}
+	},
+	{
+		"template": "Segment Update Event",
+		"eventType": "SEGMENT_UPDATE_ADD_EVENT",
+		"event": {
+			"objects": [
+				"SEGMENT",
+				"ADD"
+			]
+		}
+	},
+	{
+		"template": "Segment Update Event",
+		"eventType": "SEGMENT_UPDATE_REMOVE_EVENT",
+		"event": {
+			"objects": [
+				"SEGMENT",
+				"REMOVE"
+			]
+		}
+	},
+	{
+		"template": "Role Event",
+		"eventType": "ROLE_CREATED",
+		"event": {
+			"objects": [
+				"ROLE",
+				"CREATED"
+			]
+		}
+	},
+	{
+		"template": "Role Event",
+		"eventType": "ROLE_UPDATED",
+		"event": {
+			"objects": [
+				"ROLE",
+				"UPDATED"
+			]
+		}
+	},
+	{
+		"template": "Role Event",
+		"eventType": "ROLE_UPDATED_SEGMENT_ADD",
+		"event": {
+			"objects": [
+				"ROLE",
+				"UPDATED"
+			]
+		}
+	},
+	{
+		"template": "Role Event",
+		"eventType": "ROLE_UPDATED_SEGMENT_REMOVE",
+		"event": {
+			"objects": [
+				"ROLE",
+				"UPDATED"
+			]
+		}
+	},
+	{
+		"template": "Access Profile Event",
+		"eventType": "ACCESS_PROFILE_CREATE",
+		"event": {
+			"objects": [
+				"ACCESS_PROFILE",
+				"CREATED"
+			]
+		}
+	},
+	{
+		"template": "Access Profile Event",
+		"eventType": "ACCESS_PROFILE_UPDATE",
+		"event": {
+			"objects": [
+				"ACCESS_PROFILE",
+				"UPDATED"
+			]
+		}
+	},
+	{
+		"template": "Access Profile Event",
+		"eventType": "ACCESS_PROFILE_UPDATE_SEGMENT_ADD",
+		"event": {
+			"objects": [
+				"ACCESS_PROFILE",
+				"UPDATED"
+			]
+		}
+	},
+	{
+		"template": "Access Profile Event",
+		"eventType": "ACCESS_PROFILE_UPDATE_SEGMENT_REMOVE",
+		"event": {
+			"objects": [
+				"ACCESS_PROFILE",
+				"UPDATED"
+			]
+		}
+	},
+	{
+		"template": "Capability Update Event",
+		"eventType": "CAPABILITY_UPDATE_EVENT",
+		"event": {
+			"operation": "$.data.operation",
+			"objects": [
+				"USER",
+				"ROLE",
+				"$.data.capability"
+			]
+		}
+	},
+	{
+		"template": "User Password Event",
+		"eventType": "AUTH_USER_PASSWORD_UPDATE",
+		"event": {
+			"operation": "UPDATE"
+		}
+	}
+]

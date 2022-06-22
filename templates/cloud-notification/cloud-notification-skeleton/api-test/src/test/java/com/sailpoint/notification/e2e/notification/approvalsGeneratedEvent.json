@@ -1,0 +1,45 @@
+{
+  "id": "2c91808d757b9e8401758ef268b67554",
+  "requestedFor": {
+    "type": "IDENTITY",
+    "id": "2c91808d757b9e8401758ef268b67554",
+    "name": "SailPoint Support",
+    "email": "domingo.lara@sailpoint.com"
+  },
+  "requestedBy": {
+    "type": "IDENTITY",
+    "id": "be49f789-ff7c-4411-84f1-32b2741247bf",
+    "name": "SailPoint Support"
+  },
+  "requestType": "GRANT_ACCESS",
+  "accessRequestItemsWithApprovals": [
+    {
+      "accessRequestItem": {
+        "id": "be49f789-ff7c-4411-84f1-32b2741247bf",
+        "name": "test",
+        "type": "ROLE",
+        "removeDate": null,
+        "requesterComment": {
+          "comment": "ddd",
+          "author": {
+            "type": "IDENTITY",
+            "id": "be49f789-ff7c-4411-84f1-32b2741247bf",
+            "name": "SailPoint Support"
+          },
+          "created": "2020-11-09T17:51:08.475Z"
+        },
+        "clientMetadata": null
+      },
+      "approvals": [
+        {
+          "approvalSchema": "ROLE_OWNER",
+          "owner": {
+            "type": "IDENTITY",
+            "id": "be49f789-ff7c-4411-84f1-32b2741247bf",
+            "name": "SailPoint Support"
+          }
+        }
+      ]
+    }
+  ]
+}

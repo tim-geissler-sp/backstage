@@ -1,0 +1,414 @@
+{
+	"id": "idn:saved-search-complete",
+	"name": "Scheduled Search",
+	"description": "A scheduled search completed and results are available.",
+	"type": "FIRE_AND_FORGET",
+	"eventSources": [
+		{
+			"topic": "SEARCH",
+			"eventType": "SAVED_SEARCH_COMPLETE"
+		}
+	],
+	"inputSchema": {
+		"definitions": {
+			"record:SavedSearchCompleteInput": {
+				"type": "object",
+				"required": [
+					"fileName",
+					"ownerEmail",
+					"ownerName",
+					"query",
+					"searchName",
+					"searchResults",
+					"signedS3Url"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"fileName": {
+						"type": "string"
+					},
+					"ownerEmail": {
+						"type": "string"
+					},
+					"ownerName": {
+						"type": "string"
+					},
+					"query": {
+						"type": "string"
+					},
+					"searchName": {
+						"type": "string"
+					},
+					"searchResults": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"$ref": "#/definitions/record:SearchResults"
+							}
+						]
+					},
+					"signedS3Url": {
+						"type": "string"
+					}
+				}
+			},
+			"record:SearchResults": {
+				"type": "object",
+				"optional": [
+					"Account",
+					"Entitlement",
+					"Identity"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"Account": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"$ref": "#/definitions/record:Account"
+							}
+						]
+					},
+					"Entitlement": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"$ref": "#/definitions/record:Entitlement"
+							}
+						]
+					},
+					"Identity": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"$ref": "#/definitions/record:Identity"
+							}
+						]
+					}
+				}
+			},
+			"record:Account": {
+				"type": "object",
+				"required": [
+					"count",
+					"noun",
+					"preview"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"count": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"noun": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"preview": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "array",
+								"items": {
+									"oneOf": [
+										{
+											"type": "null"
+										},
+										{
+											"type": "array",
+											"items": {
+												"oneOf": [
+													{
+														"type": "null"
+													},
+													{
+														"type": "string"
+													}
+												]
+											}
+										}
+									]
+								}
+							}
+						]
+					}
+				}
+			},
+			"record:Entitlement": {
+				"type": "object",
+				"required": [
+					"count",
+					"noun",
+					"preview"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"count": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"noun": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"preview": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "array",
+								"items": {
+									"oneOf": [
+										{
+											"type": "null"
+										},
+										{
+											"type": "array",
+											"items": {
+												"oneOf": [
+													{
+														"type": "null"
+													},
+													{
+														"type": "string"
+													}
+												]
+											}
+										}
+									]
+								}
+							}
+						]
+					}
+				}
+			},
+			"record:Identity": {
+				"type": "object",
+				"required": [
+					"count",
+					"noun",
+					"preview"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"count": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"noun": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"preview": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "array",
+								"items": {
+									"oneOf": [
+										{
+											"type": "null"
+										},
+										{
+											"type": "array",
+											"items": {
+												"oneOf": [
+													{
+														"type": "null"
+													},
+													{
+														"type": "string"
+													}
+												]
+											}
+										}
+									]
+								}
+							}
+						]
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:SavedSearchCompleteInput"
+	},
+	"exampleInput": {
+		"fileName": "Modified.zip",
+		"ownerEmail": "test@sailpoint.com",
+		"ownerName": "Cloud Support",
+		"query": "modified:[now-7y/d TO now]",
+		"searchName": "Modified Activity",
+		"searchResults": {
+			"Identity": {
+				"count": "2",
+				"noun": "identities",
+				"preview": [
+					[
+						"Display Name",
+						"First Name",
+						"Last Name",
+						"Work Email",
+						"Created",
+						"Lifecycle State"
+					],
+					[
+						"Carol Shelby",
+						"Carol",
+						"Shelby",
+						"carol.shelby@sailpoint.com",
+						"2019-11-14T15:56:00.862Z",
+						""
+					],
+					[
+						"Jack Roush",
+						"Jack",
+						"Roush",
+						"jack.rousha@sailpoint.com",
+						"2019-11-14T15:56:00.862Z",
+						""
+					]
+				]
+			},
+			"Entitlement": {
+				"count": "2",
+				"noun": "entitlements",
+				"preview": [
+					[
+						"Display Name",
+						"Name",
+						"Description",
+						"Source ID",
+						"Source Name",
+						"Attribute",
+						"Value",
+						"Privileged",
+						"Tags"
+					],
+					[
+						"Administrator",
+						"Administrator",
+						"Full administrative access to IdentityNow",
+						"2c91808a6e236e33016e6a91f61e3b32",
+						"IdentityNow",
+						"assignedGroups",
+						"ORG_ADMIN",
+						"false",
+						""
+					],
+					[
+						"Auditor",
+						"Auditor",
+						"Auditor access to IdentityNow",
+						"2c91808a6e236e33016e6a91f61e3b32",
+						"IdentityNow",
+						"assignedGroups",
+						"AUDITOR",
+						"false",
+						""
+					]
+				]
+			},
+			"Account": {
+				"count": "3",
+				"noun": "accounts",
+				"preview": [
+					[
+						"Account Name",
+						"Native Account ID",
+						"Source Name",
+						"Identity Name",
+						"Extended Attributes",
+						"Tags"
+					],
+					[
+						"Stacy.Warner",
+						"Stacy.Warner",
+						"House Staff",
+						"Stacy.Warner",
+						"mail\u003dstacy@house.com,teletexTerminalIdentifier\u003dteletexTerminalIdentifier,postalCode\u003d78726,carLicense\u003d[carLicense],telexNumber\u003dtelexNumber,employeeNumber\u003d681497,postOfficeBox\u003dpostOfficeBox,registeredAddress\u003dregisteredAddress,pager\u003dpager,msRTCSIP-UserEnabled\u003dfalse,mailNickname\u003dmailNickname,LyncPinSet\u003dLyncPinSet,physicalDeliveryOfficeName\u003dabc,sAMAccountName\u003dStacy.Warner,initials\u003dHH,msNPAllowDialin\u003dmsNPAllowDialin,givenName\u003dStacy,homePhone\u003d512-942-7578,objectClass\u003d[objectClass],destinationIndicator\u003ddestinationIndicator,postalAddress\u003dpostalAddress,internationaliSDNNumber\u003dinternationaliSDNNumber,departmentNumber\u003dLegal,objectSid\u003dobjectSid,LyncPinLockedOut\u003dLyncPinLockedOut,pwdLastSet\u003dpwdLastSet,msNPCallingStationID\u003d[msNPCallingStationID],msRADIUSFramedIPAddress\u003dmsRADIUSFramedIPAddress,preferredLanguage\u003dpreferredLanguage,roomNumber\u003droomNumber,telephoneNumber\u003d512-942-7578,displayName\u003dStacy Warner,distinguishedName\u003dDN\u003dStacy Warner,title\u003dtitle,seeAlso\u003dseeAlso,uid\u003duid,secretary\u003dsecretary,street\u003dstreet,objectguid\u003d125,memberOf\u003d[Diagnostics],msExchHideFromAddressLists\u003dfalse,sn\u003dWarner,department\u003ddepartment,userPrincipalName\u003duserPrincipalName,idNowDescription\u003d391ff9c367aa90a0e1a0c6c174aa1d3dec1d3071148e0e62827858a562397224,st\u003dst,manager\u003dCN\u003dLisa.Cuddy,ou\u003d[ou],mobile\u003d512-942-7578,primaryGroupDN\u003dprimaryGroupDN,cn\u003dStacy.Warner,facsimileTelephoneNumber\u003d[512-942-7578],l\u003dl,homeMDB\u003dhomeMDB,homePostalAddress\u003d11305 Four Points Blvd,SipAddress\u003dSipAddress,o\u003do,accountFlags\u003d[accountFlags],employeeType\u003dFull Time,preferredDeliveryMethod\u003dpreferredDeliveryMethod,primaryGroupID\u003dprimaryGroupID,businessCategory\u003dLegal,RegistrarPool\u003dRegistrarPool,msDS-PrincipalName\u003dmsDS-PrincipalName,msRADIUSFramedRoute\u003d[msRADIUSFramedRoute],msRADIUSCallbackNumber\u003dmsRADIUSCallbackNumber",
+						""
+					],
+					[
+						"Lisa.Cuddy",
+						"Lisa.Cuddy",
+						"House Staff",
+						"Lisa.Cuddy",
+						"mail\u003djames@house.com,teletexTerminalIdentifier\u003dteletexTerminalIdentifier,postalCode\u003d78726,carLicense\u003d[carLicense],telexNumber\u003dtelexNumber,employeeNumber\u003d681497,postOfficeBox\u003dpostOfficeBox,registeredAddress\u003dregisteredAddress,pager\u003dpager,msRTCSIP-UserEnabled\u003dfalse,mailNickname\u003dmailNickname,LyncPinSet\u003dLyncPinSet,physicalDeliveryOfficeName\u003dabc,sAMAccountName\u003dLisa.Cuddy,initials\u003dHH,msNPAllowDialin\u003dmsNPAllowDialin,givenName\u003dLisa,homePhone\u003d512-942-7578,objectClass\u003d[objectClass],destinationIndicator\u003ddestinationIndicator,postalAddress\u003dpostalAddress,internationaliSDNNumber\u003dinternationaliSDNNumber,departmentNumber\u003dAdministration,objectSid\u003dobjectSid,LyncPinLockedOut\u003dLyncPinLockedOut,pwdLastSet\u003dpwdLastSet,msNPCallingStationID\u003d[msNPCallingStationID],msRADIUSFramedIPAddress\u003dmsRADIUSFramedIPAddress,preferredLanguage\u003dpreferredLanguage,roomNumber\u003droomNumber,telephoneNumber\u003d512-942-7578,displayName\u003dLisa Cuddy,distinguishedName\u003dDN\u003dLisa Cuddy,title\u003dtitle,seeAlso\u003dseeAlso,uid\u003duid,secretary\u003dsecretary,street\u003dstreet,objectguid\u003d125,memberOf\u003d[Administration],msExchHideFromAddressLists\u003dfalse,sn\u003dCuddy,department\u003ddepartment,userPrincipalName\u003duserPrincipalName,idNowDescription\u003d0fb7bb4cb6c086640ef098f5dd36c5c42500e3a60a116ea936f284a4f70cf45b,st\u003dst,manager\u003dCN\u003dLisa.Cuddy,ou\u003d[ou],mobile\u003d512-942-7578,primaryGroupDN\u003dprimaryGroupDN,cn\u003dLisa.Cuddy,facsimileTelephoneNumber\u003d[512-942-7578],l\u003dl,homeMDB\u003dhomeMDB,homePostalAddress\u003d11305 Four Points Blvd,SipAddress\u003dSipAddress,o\u003do,accountFlags\u003d[accountFlags],employeeType\u003dFull Time,preferredDeliveryMethod\u003dpreferredDeliveryMethod,primaryGroupID\u003dprimaryGroupID,businessCategory\u003dAdministration,RegistrarPool\u003dRegistrarPool,msDS-PrincipalName\u003dmsDS-PrincipalName,msRADIUSFramedRoute\u003d[msRADIUSFramedRoute],msRADIUSCallbackNumber\u003dmsRADIUSCallbackNumber",
+						""
+					],
+					[
+						"Robert.Chase",
+						"Robert.Chase",
+						"House Staff",
+						"Robert.Chase",
+						"mail\u003drobert@house.com,teletexTerminalIdentifier\u003dteletexTerminalIdentifier,postalCode\u003d78726,carLicense\u003d[carLicense],telexNumber\u003dtelexNumber,employeeNumber\u003d681497,postOfficeBox\u003dpostOfficeBox,registeredAddress\u003dregisteredAddress,pager\u003dpager,msRTCSIP-UserEnabled\u003dfalse,mailNickname\u003dmailNickname,LyncPinSet\u003dLyncPinSet,physicalDeliveryOfficeName\u003dabc,sAMAccountName\u003dRobert.Chase,initials\u003dHH,msNPAllowDialin\u003dmsNPAllowDialin,givenName\u003dRobert,homePhone\u003d512-942-7578,objectClass\u003d[objectClass],destinationIndicator\u003ddestinationIndicator,postalAddress\u003dpostalAddress,internationaliSDNNumber\u003dinternationaliSDNNumber,departmentNumber\u003dDiagnostics,objectSid\u003dobjectSid,LyncPinLockedOut\u003dLyncPinLockedOut,pwdLastSet\u003dpwdLastSet,msNPCallingStationID\u003d[msNPCallingStationID],msRADIUSFramedIPAddress\u003dmsRADIUSFramedIPAddress,preferredLanguage\u003dpreferredLanguage,roomNumber\u003droomNumber,telephoneNumber\u003d512-942-7578,displayName\u003dRobert Chase,distinguishedName\u003dDN\u003dRobert Chase,title\u003dtitle,seeAlso\u003dseeAlso,uid\u003duid,secretary\u003dsecretary,street\u003dstreet,objectguid\u003d125,memberOf\u003d[Diagnostics],msExchHideFromAddressLists\u003dfalse,sn\u003dChase,department\u003ddepartment,userPrincipalName\u003duserPrincipalName,idNowDescription\u003d820ff29573b916d9630205e4cae9a21061284a2866981433c9ef012f644ea326,st\u003dst,manager\u003dCN\u003dGreg.House,ou\u003d[ou],mobile\u003d512-942-7578,primaryGroupDN\u003dprimaryGroupDN,cn\u003dRobert.Chase,facsimileTelephoneNumber\u003d[512-942-7578],l\u003dl,homeMDB\u003dhomeMDB,homePostalAddress\u003d11305 Four Points Blvd,SipAddress\u003dSipAddress,o\u003do,accountFlags\u003d[accountFlags],employeeType\u003dFull Time,preferredDeliveryMethod\u003dpreferredDeliveryMethod,primaryGroupID\u003dprimaryGroupID,businessCategory\u003dDiagnostics,RegistrarPool\u003dRegistrarPool,msDS-PrincipalName\u003dmsDS-PrincipalName,msRADIUSFramedRoute\u003d[msRADIUSFramedRoute],msRADIUSCallbackNumber\u003dmsRADIUSCallbackNumber",
+						""
+					]
+				]
+			}
+		},
+		"signedS3Url": "https://sptcbu-org-data-useast1.s3.amazonaws.com/arsenal-john/reports/Events%20Export.2020-05-06%2018%2759%20GMT.3e580592-86e4-4953-8aea-49e6ef20a086.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20200506T185919Z&X-Amz-SignedHeaders=host&X-Amz-Expires=899&X-Amz-Credential=AKIAV5E54XOGTS4Q4L7A%2F20200506%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=2e732bb97a12a1fd8a215613e3b90fcdae8ba1fb6a25916843ab5b51d2ddefbc"
+	}
+}

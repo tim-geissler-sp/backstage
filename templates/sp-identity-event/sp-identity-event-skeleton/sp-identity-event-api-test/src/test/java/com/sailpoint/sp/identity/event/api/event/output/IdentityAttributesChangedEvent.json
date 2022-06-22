@@ -1,0 +1,28 @@
+{
+	"identity": {
+		"id": '#(externalId)',
+		"name": "john.doe",
+		"type": "IDENTITY"
+	},
+	"changes": [{
+		"attribute": "department",
+		"oldValue": "sales",
+		"newValue": "marketing"
+	}, {
+		"attribute": "manager",
+		"oldValue": {
+			"id": "ee769173319b41d19ccec6c235423237b",
+			"name": "nice.guy",
+			"type": "IDENTITY"
+		},
+		"newValue": {
+			"id": "ee769173319b41d19ccec6c235423236c",
+			"name": "mean.guy",
+			"type": "IDENTITY"
+		}
+	}, {
+		"attribute": "email",
+		"oldValue": "john.doe@hotmail.com",
+		"newValue": "john.doe@gmail.com"
+	}]
+}

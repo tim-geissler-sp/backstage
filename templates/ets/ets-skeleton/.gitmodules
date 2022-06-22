@@ -1,0 +1,3 @@
+[submodule "github-action-stoplight-publisher"]
+	path = github-action-stoplight-publisher
+	url = git@github.com:sailpoint/github-action-stoplight-publisher.git

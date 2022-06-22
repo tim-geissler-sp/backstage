@@ -1,0 +1,54 @@
+# Eclipse
+.buildpath
+.classpath
+.project
+.settings
+
+# Maven release plugin
+/release.properties
+pom.xml.releaseBackup
+
+# emacs
+*~
+\#*#
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+*.ids
+.idea
+**/.slcache
+
+# Mac OS X
+.DS_Store
+
+# Xcode
+*.pbxuser
+*.xcuserstate
+project.xcworkspace/
+xcuserdata/
+
+# misc root target directory
+/out/
+
+# Cloud test output
+cloud-test/test-output
+cloud-test/out
+
+# Vim
+*.swp
+
+# If the user wants to create some custom pom.xml files to
+# save test configuration and call maven with:
+# $mvn -f pom-buoy-campain-test.xml
+pom-*.xml
+build
+out
+.idea
+*.iml
+.gradle
+.DS_Store
+/debug.log
+velocity.log*
+sptcbu-org-data

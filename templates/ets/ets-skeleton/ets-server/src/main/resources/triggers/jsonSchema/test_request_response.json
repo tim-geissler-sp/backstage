@@ -1,0 +1,46 @@
+{
+	"id": "test:request-response",
+	"name": "Request-Response Test",
+	"type": "REQUEST_RESPONSE",
+	"description": "Example trigger for testing",
+	"inputSchema": {
+		"definitions": {
+			"record:AccessRequestedInput": {
+				"type": "object",
+				"required": [
+					"identityId"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"identityId": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:AccessRequestedInput"
+	},
+	"exampleInput": {
+		"identityId": "201327fda1c44704ac01181e963d463c"
+	},
+	"outputSchema": {
+		"definitions": {
+			"record:AccessRequestedOutput": {
+				"type": "object",
+				"required": [
+					"approved"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"approved": {
+						"type": "boolean"
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:AccessRequestedOutput"
+	},
+	"exampleOutput": {
+		"approved": true
+	}
+}

@@ -1,0 +1,298 @@
+{
+	"id": "idn:post-provisioning",
+	"name": "Provisioning Completed",
+	"type": "FIRE_AND_FORGET",
+	"description": "A provisioning action completed on a source.",
+	"eventSources": [
+		{
+			"topic": "POST_PROVISIONING",
+			"eventType": "POST_PROVISIONING_COMPLETED"
+		}
+	],
+	"inputSchema": {
+		"definitions": {
+			"record:PostProvisioningInput": {
+				"type": "object",
+				"required": [
+					"trackingNumber",
+					"sources",
+					"recipient",
+					"accountRequests"
+				],
+				"optional": [
+					"action",
+					"errors",
+					"warnings",
+					"requester"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"trackingNumber": {
+						"type": "string"
+					},
+					"sources": {
+						"type": "string"
+					},
+					"action": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"errors": {
+						"oneOf": [
+							{
+								"type": "array",
+								"items": {
+									"oneOf": [
+										{
+											"type": "null"
+										},
+										{
+											"type": "string"
+										}
+									]
+								}
+							},
+							{
+								"type": "null"
+							}
+						]
+					},
+					"warnings": {
+						"oneOf": [
+							{
+								"type": "array",
+								"items": {
+									"oneOf": [
+										{
+											"type": "null"
+										},
+										{
+											"type": "string"
+										}
+									]
+								}
+							},
+							{
+								"type": "null"
+							}
+						]
+					},
+					"recipient": {
+						"$ref": "#/definitions/record:requestForIdentityRef"
+					},
+					"requester": {
+						"oneOf": [
+							{
+								"$ref": "#/definitions/record:requestByIdentityRef"
+							},
+							{
+								"type": "null"
+							}
+						]
+					},
+					"accountRequests": {
+						"type": "array",
+						"items": {
+							"$ref": "#/definitions/record:accountRequestsRecord"
+						}
+					}
+				}
+			},
+			"record:requestForIdentityRef": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"type"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					}
+				}
+			},
+			"record:requestByIdentityRef": {
+				"type": "object",
+				"required": [
+					"type",
+					"id",
+					"name"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"type": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				}
+			},
+			"record:accountRequestsRecord": {
+				"type": "object",
+				"optional": [
+					"accountId",
+					"ticketId",
+					"attributeRequests"
+				],
+				"required": [
+					"source",
+					"accountOperation",
+					"provisioningResult",
+					"provisioningTarget"
+
+				],
+				"additionalProperties": true,
+				"properties": {
+					"source": {
+						"$ref": "#/definitions/record:sourceRef"
+					},
+					"accountId": {
+						"type": "string"
+					},
+					"accountOperation": {
+						"type": "string"
+					},
+					"provisioningResult": {
+						"type": "string"
+					},
+					"provisioningTarget": {
+						"type": "string"
+					},
+					"ticketId": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"attributeRequests": {
+						"oneOf": [
+							{
+								"type": "array",
+								"items": {
+									"$ref": "#/definitions/record:attributeRequestsRecord"
+								}
+							},
+							{
+								"type": "null"
+							}
+						]
+					}
+				}
+			},
+			"record:sourceRef": {
+				"type": "object",
+				"required": [
+					"type",
+					"id",
+					"name"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"type": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				}
+			},
+			"record:attributeRequestsRecord": {
+				"type": "object",
+				"optional": [
+					"attributeValue"
+				],
+				"required": [
+					"attributeName",
+					"operation"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"attributeName": {
+						"type": "string"
+					},
+					"attributeValue": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"operation": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:PostProvisioningInput"
+	},
+	"exampleInput": {
+		"trackingNumber": "4b4d982dddff4267ab12f0f1e72b5a6d",
+		"action": "IdentityRefresh",
+		"requester": {
+			"id": "2c91808b6ef1d43e016efba0ce470906",
+			"name": "Adam Admin",
+			"type": "IDENTITY"
+		},
+		"recipient": {
+			"id": "2c91808b6ef1d43e016efba0ce470909",
+			"name": "Ed Engineer",
+			"type": "IDENTITY"
+		},
+		"errors": [
+			"General Error",
+			"Connector AD Failed"
+		],
+		"warnings": [
+			"Notification Skipped due to invalid email"
+		],
+		"sources": "Corp AD, Corp LDAP, Corp Salesforce",
+		"accountRequests": [
+			{
+				"source": {
+					"id": "4e4d982dddff4267ab12f0f1e72b5a6d",
+					"name": "Corporate Active Directory",
+					"type": "SOURCE"
+				},
+				"accountId": "CN=Chewy.Bacca,ou=hardcorefigter,ou=wookies,dc=starwars,dc=com",
+				"accountOperation": "Modify",
+				"provisioningResult": "SUCCESS",
+				"provisioningTarget": "Corp AD",
+				"ticketId": "72619262",
+				"attributeRequests": [
+					{
+						"operation": "Add",
+						"attributeName": "memberOf",
+						"attributeValue": "CN=jedi,DC=starwars,DC=com"
+					}
+				]
+			}
+		]
+	}
+}

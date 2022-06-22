@@ -1,0 +1,24 @@
+dependencies {
+	implementation(project(":audit-events"))
+
+	testImplementation(project(":audit-events").sourceSets.test.output)
+}
+
+jacocoTestCoverageVerification {
+	afterEvaluate {
+		getClassDirectories().setFrom(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+				'com/sailpoint/audit/service/model/*',
+			])
+		})
+	}
+
+	violationRules {
+		rule {
+			limit {
+				counter = 'COMPLEXITY'
+				minimum = 0.73
+			}
+		}
+	}
+}

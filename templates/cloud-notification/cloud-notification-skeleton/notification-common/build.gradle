@@ -1,0 +1,25 @@
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				counter = 'COMPLEXITY'
+				minimum = 0.78
+			}
+		}
+	}
+}
+
+dependencies {
+	api(platform("com.sailpoint:atlas-platform:$project.ATLAS_VERSION"))
+
+	compile(project(":notification-api"))
+	compile("com.sailpoint:atlas")
+	compile("com.sailpoint:atlas-api-common")
+	compile("com.sailpoint:atlas-event")
+	compile("com.jayway.jsonpath:json-path")
+	compile("com.sailpoint:saas-kafka-topics:$project.KAFKA_TOPICS_VERSION")
+	compile("com.amazonaws:aws-java-sdk-secretsmanager:1.11.880")
+
+	testCompile("junit:junit")
+	testCompile("org.mockito:mockito-core")
+}

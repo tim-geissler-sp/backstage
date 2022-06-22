@@ -1,0 +1,368 @@
+/*
+ * Copyright (C) 2020 SailPoint Technologies, Inc.  All rights reserved.
+ */
+@Library('sailpoint/jenkins-release-utils')_
+
+/**
+ * Jenkins release pipeline for sp-identity-event
+ */
+pipeline {
+	agent none
+
+	options {
+		// Aborts job if run time is over 24 hours
+		timeout(time: 24, unit: 'HOURS')
+
+		// Add timestamps to console output
+		timestamps()
+
+		// Don't allow concurrent builds to run
+		disableConcurrentBuilds()
+
+		// Keep builds for a year + 30 days.
+		buildDiscarder(logRotator(daysToKeepStr: '395'))
+	}
+
+	triggers {
+		// Poll for changes every 5 minutes.
+		pollSCM('H/5 * * * *')
+	}
+
+	environment {
+		// The scrum which owns this component
+		JIRA_PROJECT = 'PLTCORE'
+
+		// The component name in Jira for the deployment ticket
+		JIRA_COMPONENT = 'sp-identity-event'
+
+		// The name of the build artifact to generate
+		BUILD_NUMBER = "${env.BUILD_NUMBER}"
+
+		// The maximum amount of time (in minutes) to wait for a build
+		BUILD_TIMEOUT = 20
+
+		// The maximum amount of time (in minutes) for tests to take before they are auto failed.
+		TEST_TIMEOUT = 10
+
+		// The maximum amount of time (in minutes) to wait for a deploy
+		DEPLOY_TIMEOUT = 30
+
+		// Which room to report successes & failures too.
+		SLACK_CHANNEL = "#team-eng-platform-core-jnk"
+
+		// The branch releases can be cut from.
+		RELEASE_BRANCH = "master"
+
+		// The name of service being released
+		SERVICE_NAME = "sp-identity-event"
+
+		// The Github repo name
+		GITHUB_REPO_NAME = "sailpoint/sp-identity-event"
+		
+		// The GitHub url
+		GITHUB_REPO = "git@github.com:sailpoint/sp-identity-event.git"
+
+		// The name of the module where the api (karate) tests are located
+		API_TEST_MODULE_NAME = 'sp-identity-event-api-test'
+
+		// The name of the jenkins_release_utils script used to execute the build
+		BUILD_SCRIPT_NAME = "atlas_service_make_docker_build.sh"
+
+		// Test branch to verify pipeline
+		TEST_PIPELINE_BRANCH = "jenkinsfile"
+	}
+
+	stages {
+		stage('Build sp-identity-event') {
+			when {
+				anyOf{
+					branch env.RELEASE_BRANCH
+					branch env.TEST_PIPELINE_BRANCH
+				}
+			}
+
+			steps {
+				echo "${env.SERVICE_NAME} service release pipeline for ${env.BUILD_NUMBER} is starting."
+				sendSlackNotification(
+					env.SLACK_CHANNEL,
+					"${env.SERVICE_NAME} service release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> is starting.",
+					utils.NOTIFY_START
+				)
+
+				script {
+					node {
+						label 'devaws'
+						utils.addJavaToPath()
+
+						try {
+							// Check out code from repository. NOTE: This will be defined in the Jenkins job
+							checkout scm
+
+							sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 406205545357.dkr.ecr.us-east-1.amazonaws.com"
+							echo "Starting build of ${env.SERVICE_NAME}"
+							withEnv(["DOCKER_CONFIG=${env.WORKSPACE}/docker.config"]) {
+								atlasServiceBuild([service_name: env.SERVICE_NAME,
+														 version: env.BUILD_NUMBER,
+														 timeout: env.BUILD_TIMEOUT.toInteger(),
+														 git_repo: env.GITHUB_REPO,
+														 boot_script_name: env.BUILD_SCRIPT_NAME
+								])
+							}
+						} finally {
+							// Always clean up the workspace
+							deleteDir()
+						}
+					}
+				}
+			}
+		}
+
+		stage('Bermuda deploy') {
+			when {
+				anyOf{
+					branch env.RELEASE_BRANCH
+					branch env.TEST_PIPELINE_BRANCH
+				}
+			}
+
+			agent {
+				label 'devaws'
+			}
+
+			steps {
+				script {
+					spIdentityEventDeploy('bermuda')
+				}
+			}
+		}
+
+		stage('Berumda verify') {
+			when {
+				anyOf{
+					branch env.RELEASE_BRANCH
+					branch env.TEST_PIPELINE_BRANCH
+				}
+			}
+
+			agent {
+				label 'devaws'
+			}
+
+			steps {
+				script {
+					utils.addJavaToPath()
+					checkout scm
+					spIdentityEventTest('us-west-2', 'bermuda', 'https://api-e2e-ber.api.cloud.sailpoint.com')
+				}
+			}
+		}
+
+		stage('Lighthouse deploy') {
+			when {
+				anyOf{
+					branch env.RELEASE_BRANCH
+					branch env.TEST_PIPELINE_BRANCH
+				}
+			}
+
+			agent {
+				label 'devaws'
+			}
+
+			steps {
+				script {
+					spIdentityEventDeploy('lighthouse')
+				}
+			}
+		}
+
+		stage('Lighthouse verify') {
+			when {
+				anyOf{
+					branch env.RELEASE_BRANCH
+					branch env.TEST_PIPELINE_BRANCH
+				}
+			}
+
+			agent {
+				label 'devaws'
+			}
+
+			steps {
+				script {
+					utils.addJavaToPath()
+					checkout scm
+					spIdentityEventTest('us-east-1', 'lighthouse', 'https://api-e2e-light.api.cloud.sailpoint.com')
+				}
+			}
+		}
+
+		stage('Create Deployment Ticket') {
+			when {
+				branch env.RELEASE_BRANCH
+			}
+
+			agent {
+				label 'devaws'
+			}
+
+			steps {
+				script {
+					def currentlyDeployedBuildNumberResult = getCurrentlyDeployedBuild([release_component: "${env.SERVICE_NAME}", is_dev: "true", return_initial_commit_status: "true"])
+					def currentlyDeployedBuildNumber = currentlyDeployedBuildNumberResult[0]
+					def isInitCommit = currentlyDeployedBuildNumberResult[1]
+					def srcTag = isInitCommit ? currentlyDeployedBuildNumber : "jenkins/${env.SERVICE_NAME}/${currentlyDeployedBuildNumber}"
+					createC3P0DeployTicket([
+							project          : env.JIRA_PROJECT,
+							repository       : env.GITHUB_REPO_NAME,
+							src_tag          : "${srcTag}",
+							dest_tag         : "jenkins/${env.SERVICE_NAME}/${env.BUILD_NUMBER}",
+							application      : "atlas",
+							build_number     : env.BUILD_NUMBER,
+							components       : env.JIRA_COMPONENT,
+							release_component: env.JIRA_COMPONENT
+					])
+				}
+
+				echo "All done, deployment is ready for approval"
+			}
+		}
+
+		stage('Deploy to other pods') {
+			when {
+				branch env.RELEASE_BRANCH
+			}
+
+			parallel {
+				stage('us-east-1 deploy') {
+					agent {
+						label 'devaws'
+					}
+					steps {
+						script {
+							spIdentityEventDeploy('stradbroke')
+						}
+					}
+				}
+				stage('Perf deploy') {
+					agent {
+						label 'devaws'
+					}
+					steps {
+						script {
+							spIdentityEventDeploy('dev01-useast1')
+						}
+					}
+				}
+				stage('Megapod deploy') {
+					agent {
+						label 'devaws'
+					}
+					steps {
+						script {
+							spIdentityEventDeploy('megapod-useast1')
+						}
+					}
+				}
+				stage('perf01-useast2 deploy') {
+					agent {
+						label 'devaws'
+					}
+					steps {
+						script {
+							spIdentityEventDeploy('perf01-useast2')
+						}
+					}
+				}
+			}
+		}
+	}
+
+	post {
+		success {
+			sendSlackNotification(
+					env.SLACK_CHANNEL,
+					"${env.SERVICE_NAME} release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> was successful.",
+					utils.NOTIFY_SUCCESS
+			)
+		}
+		failure {
+			sendSlackNotification(
+					env.SLACK_CHANNEL,
+					"${env.SERVICE_NAME} release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> failed.",
+					utils.NOTIFY_FAILURE
+			)
+		}
+		aborted {
+			sendSlackNotification(
+					env.SLACK_CHANNEL,
+					"${env.SERVICE_NAME} release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> was aborted.",
+					utils.NOTIFY_ABORTED
+			)
+		}
+	}
+}
+
+def spIdentityEventDeploy(podName) {
+	echo "Deploying ${env.SERVICE_NAME} build ${env.BUILD_NUMBER} to ${podName}."
+	sendSlackNotification(
+			env.SLACK_CHANNEL,
+			"Deploy of ${env.SERVICE_NAME} <${env.BUILD_URL}|${env.BUILD_NUMBER}> to ${podName} is starting.",
+			utils.NOTIFY_START
+	)
+
+	// Params: pod, serviceType, version, (Optionals) deployTimeout, dryDockHost, uiModuleName, uiModuleType
+	drydockDeploy(podName, env.SERVICE_NAME, env.BUILD_NUMBER, Integer.valueOf(env.DEPLOY_TIMEOUT))
+}
+
+def spIdentityEventTest(region, podName, orgUrl) {
+	sendSlackNotification(
+			env.SLACK_CHANNEL,
+			"Verification of sp-identity-event in ${podName} is starting.",
+			utils.NOTIFY_START
+	)
+	def attempts = 0
+	waitUntil {
+		try {
+
+			node {
+				label 'devaws'
+				utils.addJavaToPath()
+				env.AWS_REGION="${region}"
+				env.ATLAS_JWT_KEY_PARAM_NAME='/service/oathkeeper/dev/encryption_string'
+
+				// Test the build on bermuda
+				// support-user credentials are defined in Pipeline Jenkins config
+				withCredentials([usernamePassword(credentialsId: 'support-user', usernameVariable: 'username', passwordVariable: 'password')]) {
+					timeout(time: Integer.valueOf(env.TEST_TIMEOUT), unit: 'MINUTES') {
+						echo "Verify build ${env.BUILD_NUMBER} on ${podName}"
+						atlasAPIGatewayServiceTest([
+								test_branch      : 'master',
+								test_repo        : env.GITHUB_REPO,
+								test_org_url     : "${orgUrl}",
+								test_api_username: username,
+								test_api_password: password,
+								module_name      : env.API_TEST_MODULE_NAME,
+								show_info        : 'true',
+								pod              : "${podName}",
+								attempts         : attempts]
+						)
+					}
+				}
+			}
+			return true
+		} catch(error) {
+			echo "${podName} verification attempt failed with error: ${error}"
+			attempts++
+
+			sendSlackNotification(
+					env.SLACK_CHANNEL,
+					"${env.SERVICE_TYPE} release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> failed on ${podName} ${attempts} time(s), should I try again?<br/>Error: ${error}",
+					utils.NOTIFY_FAILURE
+			)
+
+			utils.promptToRetryTests(podName, utils.VERIFICATION_STEP, attempts)
+			return false
+		}
+	}
+}

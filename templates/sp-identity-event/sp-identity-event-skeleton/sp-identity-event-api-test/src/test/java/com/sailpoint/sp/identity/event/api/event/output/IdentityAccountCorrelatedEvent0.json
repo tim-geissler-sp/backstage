@@ -1,0 +1,46 @@
+{
+	"identity": {
+		"id":'#(externalId)',
+		"name":"leroy.sitara",
+		"type":"IDENTITY"
+	},
+	"account": {
+		"id":"2c9180845e865b19015e9ff4d2ef5108",
+		"name":"leroy.sitara",
+		"nativeIdentity":"leroy.sitara",
+		"type":"ACCOUNT",
+		"uuid":null
+	},
+	"source": {
+		"id":"2c9180855e820007015e9ff4b5a735cc",
+		"name":"EndToEnd-GenericSource",
+		"type":"SOURCE"
+	},
+	"attributes": {
+		"country": "GG",
+		"secondaryEmail": [
+			"leroy.sitara.secondary@testmail.identitysoon.com"
+		],
+		"manager": "niedermeier.ryley",
+		"displayName": "Sitara Leroy",
+		"timezone": "Asia/Almaty",
+		"givenName": "Sitara",
+		"groups": [
+			"Volente"
+		],
+		"secondaryPhoneNumber": [
+			"512 593 2543"
+		],
+		"locale": "fr",
+		"title": "National Assurance Designer",
+		"employeeNumber": "82-2683841",
+		"phoneNumber": "512 593 2543",
+		"familyName": "Leroy",
+		"name": "leroy.sitara",
+		"id": "leroy.sitara",
+		"email": "leroy.sitara@testmail.identitysoon.com",
+		"idNowDescription": "ad7b7431fcf259ca6918f2db6326a655044a984d55404da871b2d3f7994c920d",
+		"startDate": "12/23/13"
+	},
+	"entitlementCount" : 1
+}
