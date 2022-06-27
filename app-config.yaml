@@ -87,42 +87,42 @@ catalog:
   locations:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
     - type: file
-      target: ../../templates/entities.yaml
+      target: templates/entities.yaml
 
     # Local example template
     - type: file
-      target: ../../templates/ets/ets-template.yaml
+      target: templates/ets/ets-template.yaml
       rules:
         - allow: [Template]
 
     - type: file
-      target: ../../templates/sp-scheduler/sp-scheduler-template.yaml
+      target: templates/sp-scheduler/sp-scheduler-template.yaml
       rules:
         - allow: [Template]
         
     - type: file
-      target: ../../templates/ets/ets-template.yaml
+      target: templates/ets/ets-template.yaml
       rules:
         - allow: [Template]
 
     - type: file
-      target: ../../templates/cloud-audit/cloud-audit-template.yaml
+      target: templates/cloud-audit/cloud-audit-template.yaml
       rules:
         - allow: [Template]
 
     - type: file
-      target: ../../templates/cloud-notification/cloud-notification-template.yaml
+      target: templates/cloud-notification/cloud-notification-template.yaml
       rules:
         - allow: [Template]
 
     - type: file
-      target: ../../templates/sp-identity-event/sp-identity-event-template.yaml
+      target: templates/sp-identity-event/sp-identity-event-template.yaml
       rules:
         - allow: [Template]
 
     # Local example organizational data
     - type: file
-      target: ../../templates/org.yaml
+      target: templates/org.yaml
       rules:
         - allow: [User, Group]
 

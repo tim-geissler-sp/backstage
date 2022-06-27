@@ -50,7 +50,7 @@ yarn dev
 ```
 ## Docker Setup
 The root Dockerfile is configured for a Multi-stage Build.
-Build the Docker image using ```docker image build -t backstage .```,
+Build the Docker image using ```docker image build -t backstage .``` from project root,
 and execute a container locally using ```docker run -it -p 7007:7007 backstage``` (Backstage will be accessible through port 7007 - ```http://localhost:7007```),
 
 
