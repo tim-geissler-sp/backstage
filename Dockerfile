@@ -57,3 +57,5 @@ COPY app-config.yaml ./
 COPY packages/backend/templates templates
 
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
+
+# To view container filesystem: docker exec -t -i mycontainer /bin/bash
