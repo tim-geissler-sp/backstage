@@ -1,0 +1,107 @@
+plugins {
+	id "application"
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				counter = 'COMPLEXITY'
+				minimum = 0.26
+			}
+		}
+	}
+}
+
+mainClassName = "com.sailpoint.notification.NotificationServerApplication"
+
+applicationDefaultJvmArgs = ["-Xmx512m", "-Xms512m",
+							 "-Dfile.encoding=UTF-8"
+]
+
+run {
+	if (project.hasProperty('args')) {
+		args project.args.split('\\s+')
+	}
+	if (project.hasProperty('jvmArgs')) {
+		applicationDefaultJvmArgs.addAll(project.jvmArgs.split('\\s+'))
+	}
+}
+
+distributions {
+	main {
+		baseName = "hermes-server"
+		contents {
+			from { '../dockerfiles/hermes-server' }
+		}
+	}
+}
+
+startScripts {
+	def props = new Properties()
+	file("../gradle.properties").withInputStream { props.load(it) }
+
+	// If we want to build with Contrast agent, we need to dynamically
+	// obtain the variable from gradle.properties
+	doFirst {
+		if (props.toString().contains("org.gradle.jvmargs") && props.toString().contains("contrast")) {
+			def arguments = props.getProperty("org.gradle.jvmargs")
+
+			// Remove the generated javaagent path and replace it with
+			// another one as the file structure is different in Docker
+			def path = "../contrast.jar"
+
+			arguments = arguments.replaceFirst('javaagent.*?jar', 'javaagent:' + path)
+			arguments = arguments.replaceFirst('contrast.env=qa', 'contrast.env=development')
+			arguments = arguments.replaceFirst('contrast.override.appname', 'application.name')
+			arguments = arguments + ' -Dassess.tags=hermes '
+
+			def dockerfileContent = project.file("../dockerfiles/hermes-server/Dockerfile").getText('UTF-8')
+			dockerfileContent = dockerfileContent.replaceAll('HERMES_SERVER_OPTS "', 'HERMES_SERVER_OPTS "' + arguments)
+
+			//Rewrite the dockerfile to have Contrast specific variables
+			new File ("Dockerfile").write(dockerfileContent, 'UTF-8')
+		}
+	}
+}
+
+dependencies {
+	compile(platform("com.sailpoint:atlas-platform:$project.ATLAS_VERSION"))
+
+	compile(project(":notification-interest-matcher"))
+	compile(project(":notification-user-preferences"))
+	compile(project(":notification-template:context"))
+	compile(project(":notification-template:template"))
+	compile(project(":notification-template:template-manager"))
+	compile(project(":notification-sender"))
+	compile("com.sailpoint:atlas-metrics")
+	compile("com.sailpoint:atlas-logging")
+	compile("com.sailpoint:atlas-usage-plugin")
+	compile("com.sailpoint:atlas-tracing-plugin")
+	compile("com.sailpoint:atlas-profiling")
+
+	testCompile("com.sailpoint:atlas-test")
+}
+
+task copyNativeDeps(type: Copy) {
+	from(configurations.compile + configurations.testCompile) {
+		include '*.dll'
+		include '*.dylib'
+		include '*.so'
+	}
+	into 'build/libs'
+}
+
+test {
+	dependsOn copyNativeDeps
+	systemProperty "java.library.path", 'build/libs'
+}
+
+jar {
+	manifest {
+		attributes 'Implementation-Title' : "hermes"
+		attributes 'Implementation-Vendor' : "SailPoint"
+		attributes 'Implementation-Version': project.hasProperty('customVersion') ? project['customVersion'] : 'Unavailable'
+		attributes 'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date())
+	}
+}

@@ -1,0 +1,150 @@
+plugins {
+	id "java-library"
+	id "maven-publish"
+	id "jacoco"
+	id "io.freefair.aspectj.post-compile-weaving" version "6.3.0"
+	id "io.freefair.lombok" version "6.3.0"
+	id 'com.github.jk1.dependency-license-report' version '1.16'
+}
+
+allprojects {
+	apply plugin: "io.freefair.lombok"
+
+	configurations.all {
+		resolutionStrategy {
+			/*
+			 1. Ensure no dynamic versions are used, e.g. `1.+`
+			 2. Disable caching changing versions such as `SNAPSHOT` (helpful for local development)
+			 */
+			failOnDynamicVersions()
+			cacheChangingModulesFor 0, 'seconds'
+		}
+	}
+
+	configurations {
+		// Ensure versions in runtime classpath are identical to compile classpath
+		runtimeClasspath.shouldResolveConsistentlyWith(compileClasspath)
+	}
+
+	repositories {
+		mavenCentral()
+
+		maven {
+			name "release"
+			url "s3://sptcbu-mvn-repo/release"
+			authentication {
+				awsIm(AwsImAuthentication)
+			}
+		}
+
+		maven {
+			name "snapshot"
+			url "s3://sptcbu-mvn-repo/snapshot"
+			authentication {
+				awsIm(AwsImAuthentication)
+			}
+		}
+
+		maven {
+			name "DynamoDB Local Release Repository - US West (Oregon) Region"
+			url "https://s3-us-west-2.amazonaws.com/dynamodb-local/release"
+		}
+
+		maven {
+			// needed for opensaml 2.6.6
+			url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
+		}
+	}
+}
+
+subprojects { subproject ->
+	apply plugin: 'java-library'
+	apply plugin: 'maven-publish'
+	apply plugin: 'jacoco'
+	apply plugin: 'io.freefair.aspectj.post-compile-weaving'
+
+	dependencies {
+		api("org.aspectj:aspectjrt:1.9.5")
+	}
+
+	group = 'com.sailpoint'
+	version = project.hasProperty('customVersion') ? project['customVersion'] : 'integration-SNAPSHOT'
+
+	if (subproject.name == "ets-api-test") {
+		compileJava {
+			sourceCompatibility = '1.8'
+			targetCompatibility = '1.8'
+
+			options.encoding = 'UTF-8'
+			ajc.options.compilerArgs << "-Xlint:ignore" << "-warn:none"
+		}
+
+		compileTestJava {
+			sourceCompatibility = '1.8'
+			targetCompatibility = '1.8'
+
+			options.encoding = 'UTF-8'
+			ajc.options.compilerArgs << "-Xlint:ignore" << "-warn:none"
+		}
+	} else {
+		java {
+			toolchain {
+				languageVersion = JavaLanguageVersion.of(11)
+			}
+		}
+
+		compileJava {
+			sourceCompatibility = '11'
+			targetCompatibility = '11'
+
+			options.encoding = 'UTF-8'
+			ajc.options.compilerArgs << "-Xlint:ignore" << "-warn:none"
+		}
+
+		compileTestJava {
+			sourceCompatibility = '11'
+			targetCompatibility = '11'
+
+			options.encoding = 'UTF-8'
+			ajc.options.compilerArgs << "-Xlint:ignore" << "-warn:none"
+		}
+	}
+
+	configurations {
+		runtime.exclude(group: "org.slf4j", module: "slf4j-log4j12")
+	}
+
+	publishing {
+		repositories {
+			maven {
+				authentication {
+					awsIm(AwsImAuthentication)
+				}
+				def isSnapshot = subproject.version.contains('SNAPSHOT')
+				url = isSnapshot ? "s3://sptcbu-mvn-repo/snapshot" : "s3://sptcbu-mvn-repo/release"
+			}
+		}
+	}
+
+	jacocoTestReport {
+		reports {
+			xml.required = true
+			html.required = true
+		}
+	}
+
+	if (subproject.hasProperty('jacocoTestCoverageVerification')) {
+		subproject.check.dependsOn subproject.jacocoTestCoverageVerification
+	}
+
+	test {
+		failFast = true
+		testLogging {
+			exceptionFormat = 'full'
+		}
+	}
+
+	tasks.withType(Test).configureEach {
+		maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+	}
+}

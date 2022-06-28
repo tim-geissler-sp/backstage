@@ -1,0 +1,241 @@
+{
+	"id": "idn:source-account-updated",
+	"name": "Source Account Updated",
+	"description": "One or more account attributes changed on a single source account or an IdentityNow account.",
+	"type": "FIRE_AND_FORGET",
+	"eventSources": [
+		{
+			"topic": "ACCOUNTS",
+			"eventType": "ACCOUNT_UPDATED"
+		}
+	],
+	"inputSchema": {
+		"definitions": {
+			"record:SourceAccountUpdatedEvent": {
+				"type": "object",
+				"required": [
+					"id",
+					"nativeIdentifier",
+					"sourceId",
+					"sourceName",
+					"identityId",
+					"identityName",
+					"attributes"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"uuid": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					},
+					"nativeIdentifier": {
+						"type": "string"
+					},
+					"sourceId": {
+						"type": "string"
+					},
+					"sourceName": {
+						"type": "string"
+					},
+					"identityId": {
+						"type": "string"
+					},
+					"identityName": {
+						"type": "string"
+					},
+					"attributes": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"$ref": "#/definitions/record:Attributes"
+							}
+						]
+					}
+				}
+			},
+			"record:Attributes": {
+				"type": "object",
+				"required": [
+
+				],
+				"optional": [
+					"created",
+					"displayName",
+					"email",
+					"employeeNumber",
+					"firstname",
+					"identificationNumber",
+					"inactive",
+					"lastname",
+					"manager",
+					"phone",
+					"uid"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"created": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"department": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"displayName": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"email": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"employeeNumber": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"firstname": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"identificationNumber": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"inactive": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"lastname": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"phone": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"uid": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"manager": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:SourceAccountUpdatedEvent"
+	},
+	"exampleInput": {
+		"uuid": "b7264868-7201-415f-9118-b581d431c688",
+		"id": "ee769173319b41d19ccec35ba52f237b",
+		"nativeIdentifier": "",
+		"sourceId": "jlasdferquwoep452343214v",
+		"sourceName": "Active Directory",
+		"identityId": "132rfvwfr14353yas56213l",
+		"identityName": "john.doe",
+		"attributes": {
+			"firstname": "John",
+			"lastname": "Doe",
+			"email": "john.doe@gmail.com",
+			"department": "Sales",
+			"displayName": "John Doe",
+			"created": "2020-04-27T16:48:33.597Z",
+			"employeeNumber": "E009",
+			"uid": "E009",
+			"inactive": "true",
+			"phone": "512-555-1234",
+			"manager": "jane.doe",
+			"identificationNumber": "E009"
+		}
+	}
+}

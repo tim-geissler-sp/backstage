@@ -1,0 +1,543 @@
+[
+  {
+    "tenant": "acme-solar",
+    "key" : "notificationKeyTest",
+    "name" : "e2e-template-test",
+    "medium": "email",
+    "description": "Template used by E2E tests",
+    "subject" : "Welcome $event.get('recipient.name')",
+    "header": "Template name: $event.get('template').",
+    "body": "Domain event type: $event.get('domainEvent.type')",
+    "footer": "Requester: $event.get('domainEvent.content.requester_name')",
+    "from": "no-reply@sailpoint.com",
+    "replyTo": "no-reply@sailpoint.com",
+    "locale": "en"
+  },
+  {
+    "key" : "notificationKey",
+    "name" : "notificationKey_name",
+    "medium": "email",
+    "description": "notificationKey_des",
+    "subject" : "Welcome $event.get('recipient.name')",
+    "header": "Template name: $event.get('template').",
+    "body": "Domain event type: $event.get('domainEvent.type')",
+    "footer": "Requester: $event.get('domainEvent.content.requester_name')",
+    "from": "no-reply@sailpoint.com",
+    "replyTo": "no-reply@sailpoint.com",
+    "locale": "en"
+  },
+  {
+    "key" : "default_template",
+    "medium": "email",
+    "name": "default_template_name",
+    "description": "default_template_des",
+    "subject" : "$subject",
+    "header": "",
+    "body": "$body",
+    "footer": "",
+    "from": "$from",
+    "replyTo": "$replyTo",
+    "locale": "en",
+    "slackTemplate": {
+      "text": "$text",
+      "blocks": "$blocks",
+      "attachments": "$attachments"
+    },
+    "teamsTemplate": {
+      "title": "$title",
+      "messageJson": "$messageJson",
+      "text": "$text"
+    }
+  },
+  {
+    "key" : "cloud_manual_work_item_summary",
+    "medium" : "email",
+    "locale" : "en",
+    "name" : "cloud_manual_work_item_summary_name",
+    "description" : "cloud_manual_work_item_summary_des",
+    "subject" : "#set($numberOfPendingTasks = $__numberTool.integer($numberOfPendingTasks))#set($taskTasks = \"#if($numberOfPendingTasks == 1)task#{else}tasks#end\")\nYou have $numberOfPendingTasks $taskTasks to complete in ${__global.productName}.",
+    "header" : "Dear $__recipient.name,<br/><br/>",
+    "body" : "#set($numberOfPendingTasks = $__numberTool.integer($numberOfPendingTasks))\n#set($isAre = \"#if( $numberOfPendingTasks == 1)is#{else}are#end\")\n#set($taskTasks = \"#if( $numberOfPendingTasks == 1)task#{else}tasks#end\")\n#set($url = \"${__global.productUrl}/ui/main#launch:tasks\")\n\nThere $isAre $numberOfPendingTasks $taskTasks waiting for you in your $__global.productName Task Manager.<br/> Use each task's details to finish it on the source, then mark it as complete in ${__global.productName}. To do this work, go to the task manager <a href=\"$url\" target=\"_blank\">here</a>, or copy and paste this link into your browser: $url<br/>",
+    "footer" :"<br/>Thanks,<br/> The $__global.productName Team<br/>",
+    "from" : "$__global.emailFromAddress",
+    "replyTo" : "$__global.emailFromAddress"
+  },
+  {
+    "key" : "cloud_manual_tasks",
+    "medium" : "email",
+    "name" : "cloud_manual_tasks_name",
+    "description" : "cloud_manual_tasks_des",
+    "subject" : "You have a task from $__global.productName",
+    "header" : "",
+    "body" : "Task: $task",
+    "footer" :"<br />Don't ever reply to this email for you shall hear crickets",
+    "from" : "$__global.emailFromAddress",
+    "replyTo" : "$__global.emailFromAddress",
+    "locale" : "en"
+  },
+  {
+    "key" : "non_employee_request_created",
+    "medium" : "email",
+    "name" : "non_employee_request_created_name",
+    "description" : "non_employee_request_created_des",
+    "subject" : "You’ve requested a non-employee account for ${data.firstName} ${data.lastName}",
+    "header" : "Dear $__recipient.name,<br/><br/>",
+    "body" : "#set($_sourceName = $data.nonEmployeeSource.name)\n#set($_approverIds = $__util.getObjectByJsonPath($__contentJson, '$.data.approvalItems[*].approver.id'))\n\n<p>Your request for a non-employee account for $data.accountName on the source $_sourceName was successfully submitted.</p>\n#if($_approverIds.size() > 0)\n    #if($_approverIds.size() == 1)\n        <p>$__util.getUser($_approverIds[0]).name must approve this account request before it can be added to the source.</p>\n    #elseif($_approverIds.size() > 1)\n    <p>The following reviewers must approve this account request before it can be added to the source:</p>\n    <ul>\n        #foreach($_approverId in $_approverIds)\n            <li>$__util.getUser($_approverId).name</li>\n        #end\n    </ul>\n    #end\n<p>You will be notified when a decision is made about this account request. You can check the status of your request by clicking Manage Non-Employees on the dashboard and viewing the $_sourceName source.</p>\n#{else}\n<p>\n    This account will be added to $_sourceName shortly. You can check its status by clicking Manage Non-Employees on the dashboard and viewing the $_sourceName source.\n</p>\n#end\n",
+    "footer" :"<br/>Thanks,<br/> The $__global.productName Team<br/>",
+    "from" : "$__global.emailFromAddress",
+    "replyTo" : "$__global.emailFromAddress",
+    "locale" : "en"
+  },
+  {
+    "key" : "non_employee_approval_required",
+    "medium" : "email",
+    "name" : "non_employee_approval_required_name",
+    "description" : "non_employee_approval_required_des",
+    "subject" : "Review the non-employee account requested for ${data.firstName} ${data.lastName}",
+    "header" : "Dear $__recipient.name,<br/><br/>",
+    "body" : "#set($_sourceName = $data.nonEmployeeSource.name)\n#set($_requestedForDisplayName = \"${data.firstName} ${data.lastName}\")\n#set($_pendingApprovalItem = $__util.getObjectByJsonPath($__contentJson, \"$.data.approvalItems[?(@.approvalStatus == 'PENDING')]\").get(0))\n#set($_approvedApprovalItems = $__util.getObjectByJsonPath($__contentJson, \"$.data.approvalItems[?(@.approvalStatus == 'APPROVED')]\"))\n#set($_notReadyApprovalItems = $__util.getObjectByJsonPath($__contentJson, \"$.data.approvalItems[?(@.approvalStatus == 'NOT_READY')]\"))\n#set($_requester = $__util.getUser($data.requester.id))\n\n<p>$_requester.name has requested a new non-employee account for $_requestedForDisplayName on the source $_sourceName.</p>\n#set($_approvalCenterUrl = \"${__global.productUrl}/ui/d/approvals/requested-items\")\n<p>Please visit the <a href=\"$_approvalCenterUrl\">Approvals center</a> to review this request.</p>\n\n#if($_approvedApprovalItems.size()>0)\n<p>#foreach($_approvedItem in $_approvedApprovalItems)#if($foreach.count!=1) and #end$__util.getUser($_approvedItem.approver.id).name#end have approved this account.</p>\n#end\n#if($_notReadyApprovalItems.size()>0)\n<p>#foreach($_notReadyApprovalItem in $_notReadyApprovalItems)#if($foreach.count!=1) and #end$__util.getUser($_notReadyApprovalItem.approver.id).name#end will review this account request if you approve it.</p>\n#end\n#if($_pendingApprovalItem.approvalOrder == $data.approvalItems.size() - 1)\n<p>If you approve this non-employee account request, an account for $_requestedForDisplayName with the account ID\n    $data.accountName will be created in $__global.productName.</p>\n#end\n",
+    "footer" :"<br/>Thanks,<br/> The $__global.productName Team<br/>",
+    "from" : "$__global.emailFromAddress",
+    "replyTo" : "$__global.emailFromAddress",
+    "locale" : "en"
+  },
+  {
+    "key" : "non_employee_request_action_completed",
+    "medium" : "email",
+    "name" : "non_employee_request_action_completed_name",
+    "description" : "non_employee_request_action_completed_des",
+    "subject" : "Your non-employee account request for ${data.firstName} ${data.lastName} was $data.approvalStatus",
+    "header" : "Dear $__recipient.name,<br/><br/>",
+    "body" : "#set($_sourceName = $data.nonEmployeeSource.name)\n#set($_userDisplayName = \"${data.firstName} ${data.lastName}\")\n#set($_approvalStatus = $data.approvalStatus)\n#set($_createdDate = $__dateTool.toDate(\"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\", $data.created))\n<p>On $__dateTool.format('yyyy-MM-dd', $_createdDate), you requested a non-employee account for $_userDisplayName on the source $_sourceName.</p>\n\n#if($_approvalStatus == \"APPROVED\")\n<p>This request has been <span style=\"color:green\">approved</span>. A new $__global.productName account for this user is being processed. The user name for this account will be $data.accountName.</p>\n#elseif ($_approvalStatus == \"REJECTED\")\n    #set($_rejectorIds = $__util.getObjectByJsonPath($__contentJson, \"$.data.approvalItems[?(@.approvalStatus == 'REJECTED')].approver.id\"))\n    #foreach($_rejectorId in $_rejectorIds)\n        #set($_rejector = $__util.getUser($_rejectorId))\n        #set($_completionDate = $__dateTool.toDate(\"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\", $data.completionDate))\n        <p>$_rejector.name <span style=\"color:red\">denied</span> your request on $__dateTool.format('yyyy-MM-dd', $_completionDate).</p>\n        <p>Please contact $_rejector.name if you have any questions.</p>\n    #end\n#elseif ($_approvalStatus == \"CANCELLED\")\n<p>This request has been <b>cancelled</b> because one or more reviewers in the review process has been removed from the system.</p>\n<p>You can resubmit the request in $__global.productName.</p>\n#end\n\n#set($_commentApprovalItems = $__util.getObjectByJsonPath($__contentJson, \"$.data.approvalItems[?(@.comment!=null)]\"))\n#if($_commentApprovalItems.size()>0)\n    #foreach($_approvalItem in $_commentApprovalItems)\n        $__util.getUser(${_approvalItem.approver.id}).name provided the following additional information: </br>\n        <b>$_approvalItem.comment</b> </br>\n    #end\n#end",
+    "footer" :"<br/>Thanks,<br/> The $__global.productName Team<br/>",
+    "from" : "$__global.emailFromAddress",
+    "replyTo" : "$__global.emailFromAddress",
+    "locale" : "en"
+  },
+  {
+    "key" : "non_employee_term_end_date_near",
+    "medium" : "email",
+    "name" : "non_employee_term_end_date_near_name",
+    "description" : "non_employee_term_end_date_near_des",
+    "subject" : "Reminder: The end date for $data.expiringNonEmployees.size() non-employee#if($data.nonEmployeeIds.size()>1)s#end is in 7 days",
+    "header" : "Dear $__recipient.name,<br/><br/>",
+    "body" : "#set($_sourceName = $data.sourceName)\n#set($_expiringNonEmployees = $data.expiringNonEmployees)\n#set($_productName = $__global.productName)\n#set($_nonEmployeeSourceUrl = \"${__global.productUrl}/ui/d/dashboard/non-employees/sources/$data.sourceId\")\n#macro( showName $_nonEmployee )\n    $_nonEmployee.firstName $_nonEmployee.lastName ($_nonEmployee.accountName)\n#end\n<p>You are receiving this email because you’re listed as an account manager for the non-employee source $_sourceName in $_productName.</p>\n\n#if ($_expiringNonEmployees.size()==1)\n<p>The end date for the non-employee #showName($_expiringNonEmployees[0]) is in 7 days.</p>\n<p>Your admin may have configured these non-employees to lose access to $_productName on their end date.</p>\n#elseif ($_expiringNonEmployees.size()>1)\n<p>The <bold>end date</bold> for $_expiringNonEmployees.size() non-employees in $_productName is in <bold>7</bold> days.</p>\n<p>Your admin may have configured these non-employees to lose access to $_productName on their end date. The following users are included in this list:</p>\n<ul>\n    #foreach($_expireNonEmployee in $_expiringNonEmployees)\n        #if($foreach.count==21) #break #end\n        <li>#showName($_expireNonEmployee)</li>\n    #end\n</ul>\n#if ($_expiringNonEmployees.size()> 20)\n    #set($_additionalExpireNonEmployee = $_expiringNonEmployees.size() - 20)\n    <p>The complete list includes $_additionalExpireNonEmployee additional#if($_additionalExpireNonEmployee==1) identity#else identities#end. Visit the $_sourceName <a href=\"$_nonEmployeeSourceUrl\">account list</a> to view the complete list.</p>\n#end\n#end\n\n<p>You can change the end date for#if($_expiringNonEmployees.size()==1) this#else these#end and other users in the <a href=\"$_nonEmployeeSourceUrl\">$_sourceName source</a> in $_productName.  </p>",
+    "footer" :"<br/>Thanks,<br/> The $__global.productName Team<br/>",
+    "from" : "$__global.emailFromAddress",
+    "replyTo" : "$__global.emailFromAddress",
+    "locale" : "en"
+  },
+  {
+    "key" : "non_employee_bulk_import_failed_email_notification",
+    "medium" : "email",
+    "name" : "non_employee_bulk_import_failed_email_notification_name",
+    "description" : "non_employee_bulk_import_failed_email_notification_des",
+    "subject" : "#set($_sourceName = $data.sourceName)\nYour non-employee account upload for the $_sourceName source failed",
+    "header" : "Dear ${data.displayName},<br/><br/>",
+    "body" : "#set($_sourceName = $data.sourceName)\n#set($_sourceId = $data.sourceId)\n#set($url = \"${__global.productUrl}/ui/d/dashboard/non-employees/sources/$_sourceId\")\n#set($_date = $__dateTool.toDate(\"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\", $data.dateTime))\n#set($_formattedDate = $__dateTool.format(\"EEEEE, MMMMM dd, YYYY\", $_date))\n#set($_formattedTime = $__dateTool.format(\"h:mm a\", $_date))\n#set($_errorMessage = $data.errorMessage)\nThe non-employee account upload you started for the $_sourceName source on $_formattedDate at $_formattedTime failed.<br><br> The system provided this error message: $_errorMessage<br><br> You can see all accounts on this source in <a href=\"$url\" target=\"_blank\">$__global.productName</a>.<br>\n",
+    "footer" :"<br/>Thanks,<br/> The $__global.productName Team<br/>",
+    "from" : "$__global.emailFromAddress",
+    "replyTo" : "$__global.emailFromAddress",
+    "locale" : "en"
+  },
+  {
+    "key" : "non_employee_bulk_import_passed_email_notification",
+    "medium" : "email",
+    "name" : "non_employee_bulk_import_passed_email_notification_name",
+    "description" : "non_employee_bulk_import_passed_email_notification_des",
+    "subject" : "#set($_sourceName = $data.sourceName)\nYour non-employee account upload for the $_sourceName source has succeeded",
+    "header" : "Dear ${data.displayName},<br/><br/>",
+    "body" : "#set($_sourceName = $data.sourceName)\n#set($_sourceId = $data.sourceId)\n#set($url = \"${__global.productUrl}/ui/d/dashboard/non-employees/sources/$_sourceId\")\n#set($_date = $__dateTool.toDate(\"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\", $data.dateTime))\n#set($_formattedDate = $__dateTool.format(\"EEEEE, MMMMM dd, YYYY\", $_date))\n#set($_formattedTime = $__dateTool.format(\"h:mm a\", $_date))\n#set($_totalAccounts = $data.numProcessedAccounts.intValue())\n#set($_changedAccounts = $data.numChangedAccounts.intValue())\n#set($_unChangedAccounts = $data.numUnchangedAccounts.intValue())\n#set($_newAccounts = $data.numNewAccounts.intValue())\nThe non-employee account upload you started for the $_sourceName source on $_formattedDate at $_formattedTime succeeded.<br><br> This file contained $_totalAccounts account#if($_totalAccounts!=1)s#end. Based on this upload:<br><br><ul><li>$_newAccounts new non-employee account#if($_newAccounts!=1)s were#{else} was#end created.</li><li>$_changedAccounts existing non-employee account#if($_changedAccounts!=1)s were#{else} was#end updated.</li><li>$_unChangedAccounts account#if($_unChangedAccounts!=1)s were#{else} was#end unchanged.</li></ul><br>You can see all non-employee accounts on this source in <a href=\"$url\" target=\"_blank\">$__global.productName</a>.<br>\n",
+    "footer" :"<br/>Thanks,<br/> The $__global.productName Team<br/>",
+    "from" : "$__global.emailFromAddress",
+    "replyTo" : "$__global.emailFromAddress",
+    "locale" : "en"
+  },
+  {
+    "key": "campaign_template_pregen_notification",
+    "medium": "email",
+    "name": "campaign_template_pregen_notification_name",
+    "description": "campaign_template_pregen_notification_des",
+    "subject": "Reminder: Your Certification Campaign is Scheduled to Start in 7 Days",
+    "header": "Dear ${__recipient.name},<br/><br/>",
+    "body": "The certification $campaignTemplateName is scheduled to generate a campaign in 7 days. If you need to make any changes or updates to the contents of this campaign, please do so before ${generationDate}.",
+    "footer": "<br/>Thanks,<br/> The $__global.productName Team<br/>",
+    "from": "$__global.emailFromAddress",
+    "replyTo": "$__global.emailFromAddress",
+    "locale": "en"
+  },
+  {
+    "key": "access_request_submitted_with_approvers",
+    "medium": "slack",
+    "name": "Access Request Submitted with approvers",
+    "description": "Sent out when access Request Submitted with approvers",
+    "locale": "en",
+    "slackTemplate": {
+      "text": "Request Submitted",
+      "blocks": "[\n{\n\"type\": \"section\",\n\"text\": {\n\"type\": \"mrkdwn\",\n\"text\": \"*Request Submitted*\\n!SOD!\\nYour request(s) for#foreach ( $item in ${accessRequestItemsWithApprovals} )#if($item.accessRequestItem.clientMetadata) #if($item.accessRequestItem.clientMetadata.requestedAppName)*$__esc.java($item.accessRequestItem.clientMetadata.requestedAppName)* with #{else}#end*$__esc.java($item.accessRequestItem.name)* access#{else} *$__esc.java($item.accessRequestItem.name)* role#end#if($item.accessRequestItem.requesterComment) and comment *$__esc.java($item.accessRequestItem.requesterComment.comment)*#{else}#end is awaiting for approval#if(!$item.approvals.isEmpty()) by#foreach ( $approval in $item.approvals ) $__esc.java($approval.owner.name)#if( $foreach.hasNext ),#end#end#end.#end\"\n}\n},{\"type\":\"context\",\"elements\":[{\"type\":\"mrkdwn\",\"text\":\"To view the details of the request, go to the <${__global.productUrl}/ui/d/request-center/my-requests|Request Center>.\"}]},\n{\n\"type\": \"actions\",\n\"elements\": [\n{\n\"type\": \"button\",\n\"action_id\": \"access_request_cancel_request_action\",\n\"text\": {\n\"type\": \"plain_text\",\n\"emoji\": true,\n\"text\": \"Cancel Request\"\n},\n\"style\": \"danger\",\n\"value\": \"{\\\"accountActivityId\\\": \\\"$id\\\", \\\"successMessage\\\": \\\"Cancel request submitted.\\\", \\\"requestReviewedMsgFormat\\\": \\\"This request has already been %s by its reviewer(s).\\\"}\"\n}\n]\n}\n]",
+      "requestId": "$id",
+      "attachments": "",
+      "autoApprovalData": {
+        "itemId": "$accessRequestItemsWithApprovals[0].accessRequestItem.id",
+        "itemType":  "#if($accessRequestItemsWithApprovals[0].accessRequestItem.clientMetadata.requestedAppName)ACCESS_PROFILE#{else}ROLE#end",
+        "autoApprovalMessageJSON": "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"*Request Approved*\\nGreat News! Your request to access the#if($accessRequestItemsWithApprovals[0].accessRequestItem.clientMetadata) #if($accessRequestItemsWithApprovals[0].accessRequestItem.clientMetadata.requestedAppName) *$__esc.java($accessRequestItemsWithApprovals[0].accessRequestItem.clientMetadata.requestedAppName)* with #end *$__esc.java($accessRequestItemsWithApprovals[0].accessRequestItem.name)* access#{else} *$__esc.java($accessRequestItemsWithApprovals[0].accessRequestItem.name)* role#end was approved! \\n\\n To view the details of request, go to the <${__global.productUrl}/ui/d/request-center/my-requests|Request Center>.\"\n\t\t\t}\n\t\t}\n\t]",
+        "autoApprovalTitle": ":tada: Great news. Your request to access access to $__esc.java($accessRequestItemsWithApprovals[0].accessRequestItem.name) was approved."
+      }
+    }
+  },
+  {
+    "key": "access_request_submitted_with_approvers",
+    "medium": "teams",
+    "name": "Access Request Submitted with approvers",
+    "description": "Sent out when access Request Submitted with approvers",
+    "locale": "en",
+    "teamsTemplate": {
+      "title": "Request Submitted",
+      "messageJson": "{\n \"type\": \"AdaptiveCard\",\n \"body\": [\n {\n \"type\": \"TextBlock\",\n \"text\": \"**Request submitted**\"\n },\n {\n \"type\": \"TextBlock\",\n \"text\": \"Your request(s) for#foreach ( $item in ${accessRequestItemsWithApprovals} )#if($item.accessRequestItem.clientMetadata) #if($item.accessRequestItem.clientMetadata.requestedAppName)**$__esc.javascript($item.accessRequestItem.clientMetadata.requestedAppName)** with #{else}#end**$__esc.javascript($item.accessRequestItem.name)** access#elseif($item.accessRequestItem.type == \"ENTITLEMENT\") **$__esc.javascript($item.accessRequestItem.name)** entitlement#{else} **$__esc.javascript($item.accessRequestItem.name)** role#end#if($item.accessRequestItem.requesterComment) and comment *\\\"$__esc.javascript($item.accessRequestItem.requesterComment.comment)\\\"*#{else}#end is awaiting for approval#if(!$item.approvals.isEmpty()) by#foreach ( $approval in $item.approvals ) $__esc.javascript($approval.owner.name)#if( $foreach.hasNext ),#end#end#end.#end {{sodViolationInfo}} \\n \\nTo view the details of request, go to the My Requests tab.\",\n  \"wrap\": true\n }\n ,\n{\"type\": \"ActionSet\", \"actions\": [\n{\n \"type\": \"Action.ShowCard\",\n \"title\": \"Cancel\",\n \"card\": {\n \"type\": \"AdaptiveCard\",\n \"body\": [\n {\n \"type\": \"TextBlock\",\n \"text\": \"The comment is required:\"\n},\n {\n \"type\": \"Input.Text\",\n \"id\": \"comment\",\n \"isMultiline\": true,\n \"placeholder\": \"Please provide your comment here\"\n}\n ],\n \"actions\": [\n {\n \"type\": \"Action.Submit\",\n \"title\": \"Submit\",\n \"isVisible\": true,\n \"data\": {\n \"actionType\": \"cancelAccessRequest\",\n \"accessRequestId\": \"$id\"\n}\n }]\n }\n }, {\n\"type\": \"Action.OpenUrl\",\n\"title\": \"My requests\",\n \"url\": \"requestsTabUrl\"\n}\n ]\n }\n],\n \"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n \"version\": \"1.2\"\n}",
+      "text": "",
+      "requestId": "$id",
+      "autoApprovalData": {
+        "itemId": "$accessRequestItemsWithApprovals[0].accessRequestItem.id",
+        "itemType":  "#if($accessRequestItemsWithApprovals[0].accessRequestItem.clientMetadata.requestedAppName)ACCESS_PROFILE#{else}ROLE#end",
+        "autoApprovalMessageJSON": "{\n    \"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n    \"type\": \"AdaptiveCard\",\n    \"version\": \"1.2\",\n    \"body\": [\n        {\n            \"type\": \"TextBlock\",\n            \"text\": \"**Request approved**\\n\\n \uD83C\uDF89 Great News! Your request to access the #if($accessRequestItemsWithApprovals[0].accessRequestItem.clientMetadata) #if($accessRequestItemsWithApprovals[0].accessRequestItem.clientMetadata.requestedAppName) **$__esc.javascript($accessRequestItemsWithApprovals[0].accessRequestItem.clientMetadata.requestedAppName)** with #end **$__esc.javascript($accessRequestItemsWithApprovals[0].accessRequestItem.name)** access#{else} **$__esc.javascript($accessRequestItemsWithApprovals[0].accessRequestItem.name)** role#end was approved! \\n\\n To view the details of request, go to the [request center](${__global.productUrl}/ui/d/request-center/my-requests).\",\n            \"wrap\": true\n        }\n    ]\n}",
+        "autoApprovalTitle": ":tada: Great news. Your request to access access to **$__esc.javascript($accessRequestItemsWithApprovals[0].accessRequestItem.name)** was approved."
+      }
+    }
+  },
+  {
+    "key": "access_request_cancelled",
+    "medium": "slack",
+    "name": "Access Request Cancelled",
+    "description": "You have cancelled your request",
+    "locale": "en",
+    "slackTemplate": {
+      "text": "You have canceled your request for the *$__esc.java($accessRequestItems[0].name)* $accessRequestItems[0].type.toLowerCase().replaceAll('_',' ').",
+      "blocks": "[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\":no_entry_sign: *Request Canceled*\\nYou have canceled your request for the *$__esc.java($accessRequestItems[0].name)* $accessRequestItems[0].type.toLowerCase().replaceAll('_',' ').\"}}]",
+      "attachments": ""
+    }
+  },
+  {
+    "key": "access_request_cancelled",
+    "medium": "teams",
+    "name": "Access Request Cancelled",
+    "description": "You have cancelled your request",
+    "locale": "en",
+    "teamsTemplate": {
+      "title": "You have cancelled your request for $__esc.javascript($accessRequestItems[0].name) $__esc.javascript($accessRequestItems[0].type) access.",
+      "messageJson": "{\r\n    \"$schema\": \"http:\/\/adaptivecards.io\/schemas\/adaptive-card.json\",\r\n    \"type\": \"AdaptiveCard\",\r\n    \"version\": \"1.2\",\r\n    \"body\": [\r\n      {\r\n        \"type\": \"TextBlock\",\r\n        \"size\": \"default\",\r\n        \"isSubtle\": true,\r\n        \"text\": \"**Request Canceled**\\n\\nYou have canceled your request for the #if($accessRequestItems[0].clientMetadata) #if($accessRequestItems[0].clientMetadata.requestedAppName) **$__esc.javascript($accessRequestItems[0].clientMetadata.requestedAppName)** with #end **$__esc.javascript($accessRequestItems[0].name)** access profile#elseif($accessRequestItems[0].type == \"ENTITLEMENT\") **$__esc.javascript($accessRequestItems[0].name)** entitlement#{else} **$__esc.javascript($accessRequestItems[0].name)** role#end.\",\r\n        \"wrap\": true,\r\n        \"maxLines\": 0\r\n      }\r\n    ]\r\n}",
+      "text": ""
+    }
+  },
+  {
+    "key": "access_request_reviewed_approved",
+    "medium": "slack",
+    "name": "Access Request Approved",
+    "description": "Your request was approved",
+    "locale": "en",
+    "slackTemplate": {
+      "text": ":tada: Great news! Your request for access to *$__esc.java($requestedItemsStatus[0].name)* was approved!",
+      "blocks": "[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\":tada: *Request Approved*\\nGreat news! Your request for access to#if($requestedItemsStatus[0].clientMetadata) #if($requestedItemsStatus[0].clientMetadata.requestedAppName)*$__esc.java($requestedItemsStatus[0].clientMetadata.requestedAppName)* with #end*$__esc.java($requestedItemsStatus[0].name)* access#{else} *$__esc.java($requestedItemsStatus[0].name)* role#end was approved#foreach($approval in $requestedItemsStatus[0].approvalInfo)#if($foreach.last && $approval.approver.name) by $approval.approver.name#end#end.\"}},{\"type\":\"context\",\"elements\":[{\"type\":\"mrkdwn\",\"text\":\"To view the details of the request, go to the <${__global.productUrl}/ui/d/request-center/my-requests|Request Center>.\"}]}]",
+      "attachments": ""
+    }
+  },
+  {
+    "key": "access_request_reviewed_approved",
+    "medium": "teams",
+    "name": "Access Request Approved",
+    "description": "Your request was approved",
+    "locale": "en",
+    "teamsTemplate": {
+      "title": ":tada: Great news. Your request to access access to **$__esc.javascript($requestedItemsStatus[0].name)** was approved.",
+      "messageJson": "{\n    \"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n    \"type\": \"AdaptiveCard\",\n    \"version\": \"1.2\",\n    \"body\": [\n        {\n            \"type\": \"TextBlock\",\n            \"text\": \"**Request approved**\\n\\n 🎉 Great News! Your request to access the #if($requestedItemsStatus[0].clientMetadata) #if($requestedItemsStatus[0].clientMetadata.requestedAppName) **$__esc.javascript($requestedItemsStatus[0].clientMetadata.requestedAppName)** with #end **$__esc.javascript($requestedItemsStatus[0].name)** access#{else} **$__esc.javascript($requestedItemsStatus[0].name)** role#end was approved! \\n\\n To view the details of request, go to the [request center](${__global.productUrl}/ui/d/request-center/my-requests).\",\n            \"wrap\": true\n        }\n    ]\n}",
+      "text": ""
+    }
+  },
+  {
+    "key": "access_request_reviewed_denied",
+    "medium": "slack",
+    "name": "Access Request Denied",
+    "description": "Your request was denied",
+    "locale": "en",
+    "slackTemplate": {
+      "text": "Your request for access to *$__esc.java($requestedItemsStatus[0].name)* was denied.",
+      "blocks": "[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\":no_entry: *Request Denied*\\nYour request for access to#if($requestedItemsStatus[0].clientMetadata)#if($requestedItemsStatus[0].clientMetadata.requestedAppName) *$__esc.java($requestedItemsStatus[0].clientMetadata.requestedAppName)* with#end *$__esc.java($requestedItemsStatus[0].name)* access#{else} *$__esc.java($requestedItemsStatus[0].name)*#end was denied#if($requestedItemsStatus[0].approvalInfo[0].approver.name) by $__esc.java($requestedItemsStatus[0].approvalInfo[0].approver.name)#end.#if($requestedItemsStatus[0].approvalInfo[0].approvalComment)\\n\\n*Reason:*\\n>$__esc.java($requestedItemsStatus[0].approvalInfo[0].approvalComment)#end\"}},{\"type\":\"context\",\"elements\":[{\"type\":\"mrkdwn\",\"text\":\"To view the details of the request, go to the <${__global.productUrl}/ui/d/request-center/my-requests|Request Center>.\\n\"}]}]",
+      "attachments": ""
+    }
+  },
+  {
+    "key": "access_request_reviewed_denied",
+    "medium": "teams",
+    "name": "Access Request Denied",
+    "description": "Your request was denied",
+    "locale": "en",
+    "teamsTemplate": {
+      "title": "Your request for access to **$__esc.javascript($requestedItemsStatus[0].name)** was denied.",
+      "messageJson": "{\n    \"type\": \"AdaptiveCard\",\n    \"body\": [\n        {\n            \"type\": \"TextBlock\",\n            \"text\": \"**Request denied** \\n\\n Your request for access to#if($requestedItemsStatus[0].clientMetadata)#if($requestedItemsStatus[0].clientMetadata.requestedAppName) **$__esc.javascript($requestedItemsStatus[0].clientMetadata.requestedAppName)** with#end **$__esc.javascript($requestedItemsStatus[0].name)** access#{else} **$__esc.javascript($requestedItemsStatus[0].name)**#end was denied.\\n#if($requestedItemsStatus[0].approvalInfo[0].approvalComment)\\n**Reasons for decision:**\\n\\n *\\\"$__esc.javascript($requestedItemsStatus[0].approvalInfo[0].approvalComment)\\\"* #end \\n#if($requestedItemsStatus[0].approvalInfo[0].approver.name)\\n**Approver name:**\\n\\n *\\\"$__esc.javascript($requestedItemsStatus[0].approvalInfo[0].approver.name)\\\"* #end \\n\\n To view the details of request, go to the [request center](${__global.productUrl}/ui/d/request-center/my-requests).\",\n            \"wrap\": true\n        }\n    ],\n    \"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n    \"version\": \"1.2\"\n}",
+      "text": ""
+    }
+  },
+  {
+    "key": "access_request_ready_for_review",
+    "medium": "slack",
+    "name": "Access Request Ready for Review",
+    "description": "Access Request Ready for Review",
+    "locale": "en",
+    "slackTemplate": {
+      "text": "$__esc.java($requestedFor.name) is requesting access to *$__esc.java($requestedObject.name)*.",
+      "blocks": "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"$__esc.java($requestedFor.name) is requesting#if($clientMetadata)#if($clientMetadata.requestedAppName) *$__esc.java($clientMetadata.requestedAppName)* with#{else}#end *$__esc.java($requestedObject.name)* access.#{else} access to the *$__esc.java($requestedObject.name)* role.#end To view the details of the request, go to the <${__global.productUrl}/ui/d/approvals/requested-items|Request Center>.\\n!SOD!\\n*Reason for requesting:*\\n#if($requesterComment.comment)$__esc.java($requesterComment.comment)#{else}N/A#end\"}},{\"type\": \"actions\", \"elements\": [{\"type\": \"button\", \"action_id\": \"access_request_approve_request_action\", \"text\": {\"type\": \"plain_text\", \"text\": \"Approve\"},\"style\": \"primary\", \"value\":\"{\\\"approvalId\\\":\\\"$id\\\",\\\"successMessage\\\":\\\"The request has been approved.\\\",\\\"canceledMessage\\\":\\\"This request may have been canceled.\\\"}\"},{\"type\": \"button\", \"action_id\": \"access_request_deny_request_action\", \"style\": \"danger\", \"text\": {\"type\": \"plain_text\", \"text\": \"Deny\"}, \"value\":\"{\\\"approvalId\\\":\\\"$id\\\",\\\"successMessage\\\":\\\"The request has been denied.\\\",\\\"canceledMessage\\\":\\\"This request may have been canceled.\\\",\\\"commentRequiredWhenRejected\\\":\\\"$commentRequiredWhenRejected\\\",\\\"viewTitle\\\":\\\"Deny Request\\\",\\\"viewSubmit\\\":\\\"Deny Request\\\"}\"}]}]",
+      "approvalId": "$id",
+      "attachments": ""
+    }
+  },
+  {
+    "key": "access_request_ready_for_review",
+    "medium": "teams",
+    "name": "Access Request Ready for Review",
+    "description": "Access Request Ready for Review",
+    "locale": "en",
+    "teamsTemplate": {
+      "title": "**$__esc.javascript($requestedFor.name)** is requesting access to **$__esc.javascript($requestedObject.name)**.",
+      "messageJson": "{\"$schema\":\"http://adaptivecards.io/schemas/adaptive-card.json\",\"type\":\"AdaptiveCard\",\"version\":\"1.2\",\"body\":[{\"type\": \"TextBlock\", \"text\": \"**New access request is awaiting approval**\"},{\"type\":\"TextBlock\",\"size\":\"default\",\"isSubtle\":true,\"text\":\"**$__esc.javascript($requestedFor.name)** is requesting#if($clientMetadata)#if($clientMetadata.requestedAppName) **$__esc.javascript($clientMetadata.requestedAppName)** with#{else}#end **$__esc.javascript($requestedObject.name)** access.#elseif($requestedObject.type == \"ENTITLEMENT\") access to the **$__esc.javascript($requestedObject.name)** entitlement.#{else} access to the **$__esc.javascript($requestedObject.name)** role.#end To view the details of the request, go to the My Approvals tab.{{sodViolationInfo}}\\n\\n**Reason for requesting:**\\n#if($requesterComment.comment)$__esc.javascript($requesterComment.comment)#{else}N/A#end\",\"wrap\":true,\"maxLines\":0},{\"type\":\"ActionSet\",\"actions\":[{\"type\":\"Action.Submit\",\"title\":\"Approve\",\"data\":{\"accessRequestId\":\"$id\",\"actionType\":\"approveAccessRequest\",\"requestedFor\":\"$__esc.javascript($requestedFor.name)\",\"applicationName\":\"#if($clientMetadata)#if($clientMetadata.requestedAppName)$__esc.javascript($clientMetadata.requestedAppName)#{else}#end#{else}#end\",\"accessProfile\":\"#if($clientMetadata)#if($clientMetadata.requestedAppName)$__esc.javascript($requestedObject.name)#{else}#end#{else}#end\",\"roleName\":\"$__esc.javascript($requestedObject.name)\",\"productUrl\":\"${__global.productUrl}/ui/d/approvals/requested-items\",\"comment\":\"#if($requesterComment.comment)$__esc.javascript($requesterComment.comment)#{else}N/A#end\"}},{\"type\":\"Action.ShowCard\",\"title\":\"Deny\",\"card\":{\"type\":\"AdaptiveCard\",\"body\":[{\"type\":\"TextBlock\",\"text\":\"Please provide your comment:\"},{\"type\":\"Input.Text\",\"isMultiline\":true,\"id\":\"rejectComment\"}],\"actions\":[{\"type\":\"Action.Submit\",\"title\":\"Submit\",\"data\":{\"accessRequestId\":\"$id\",\"actionType\":\"rejectAccessRequest\",\"requestedFor\":\"$__esc.javascript($requestedFor.name)\",\"applicationName\":\"#if($clientMetadata)#if($clientMetadata.requestedAppName)$__esc.javascript($clientMetadata.requestedAppName)#{else}#end#{else}#end\",\"accessProfile\":\"#if($clientMetadata)#if($clientMetadata.requestedAppName)$__esc.javascript($requestedObject.name)#{else}#end#{else}#end\",\"roleName\":\"$__esc.javascript($requestedObject.name)\",\"productUrl\":\"${__global.productUrl}/ui/d/approvals/requested-items\",\"comment\":\"#if($requesterComment.comment)$__esc.javascript($requesterComment.comment)#{else}N/A#end\"}}]}},{\"type\":\"Action.OpenUrl\",\"title\":\"My approvals\",\"url\":\"approvalsTabUrl\"}]}]}",
+      "text": "",
+      "approvalId": "$id"
+    }
+  },
+  {
+    "key": "certification_campaign_generated",
+    "medium": "teams",
+    "name": "New Certification Campaign Generated",
+    "description": "Sent out when new Certification Campaign Generated",
+    "locale": "en",
+    "teamsTemplate": {
+      "title": "New Certification Campaign **$__esc.javascript($campaign.name)** Generated",
+      "messageJson": "{\n    \"type\": \"AdaptiveCard\",\n    \"body\": [\n        {\n            \"type\": \"TextBlock\",\n            \"text\": \"**New Certification Campaign Generated** \\n\\n New Certification Campaign **$__esc.javascript($campaign.name)** has been generated and is available for activation.\\n\\n [Certifications](${__global.productUrl}/ui/admin#admin:cert:campaigns)\",\n            \"wrap\": true\n        }\n    ],\n    \"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n    \"version\": \"1.2\"\n}",
+      "text": ""
+    }
+  },
+  {
+    "key": "certification_campaign_activated",
+    "medium": "teams",
+    "name": "New Certification Campaign Activated",
+    "description": "Sent out when new New Certification Campaign Activated",
+    "locale": "en",
+    "teamsTemplate": {
+      "title": "New Certification Campaign **$__esc.javascript($campaign.name)** Activated",
+      "messageJson": "#set($_deadline = $__dateTool.toDate(\"yyyy-MM-dd'T'HH:mm:ss'Z'\", $campaign.deadline))\n#set($_formattedDate = $__dateTool.format('yyyy-MM-dd', $_deadline))\n{\n    \"type\": \"AdaptiveCard\",\n    \"body\": [\n        {\n            \"type\": \"TextBlock\",\n            \"text\": \"**New Certification Campaign Activated** \\n\\n New Certification Campaign **$__esc.javascript($campaign.name)** has been activated. Due date: **$__esc.javascript($_formattedDate)**.\\n\\n [Active certifications](${__global.productUrl}/ui/admin#admin:cert:campaigns)\",\n            \"wrap\": true\n        }\n    ],\n    \"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n    \"version\": \"1.2\"\n}",
+      "text": "",
+      "customFields":  {
+        "campaignId": "$campaign.id",
+        "campaignStatus":  "$campaign.status"
+      }
+    }
+  },
+  {
+    "key": "certification_sign_off",
+    "medium": "teams",
+    "name": "Certification Sign-off",
+    "description": "Sent out when Certification Sign-off",
+    "locale": "en",
+    "teamsTemplate": {
+      "title": "Certification **$__esc.javascript($certification.campaignRef.name)** Sign-off",
+      "messageJson": "{\n    \"type\": \"AdaptiveCard\",\n    \"body\": [\n        {\n            \"type\": \"TextBlock\",\n            \"text\": \"**Certification Sign-off** \\n\\n **$__esc.javascript($certification.reviewer.name)** has signed off on their certification for campaign **$__esc.javascript($certification.campaignRef.name)**.\\n\\n [Certifications](${__global.productUrl}/ui/admin#admin:cert:campaigns)\",\n            \"wrap\": true\n        }\n    ],\n    \"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n    \"version\": \"1.2\"\n}",
+      "text": ""
+    }
+  },
+  {
+    "key": "certification_campaign_ended",
+    "medium": "teams",
+    "name": "Certification Campaign has Ended",
+    "description": "Sent out when Certification Campaign has Ended",
+    "locale": "en",
+    "teamsTemplate": {
+      "title": "Certification Campaign **$__esc.javascript($campaign.name)** has Ended",
+      "messageJson": "{\n    \"type\": \"AdaptiveCard\",\n    \"body\": [\n        {\n            \"type\": \"TextBlock\",\n            \"text\": \"**Certification Campaign has Ended** \\n\\n Certification Campaign **$__esc.javascript($campaign.name)** has ended. Please review the campaign to ensure all certifications included have been completed.\\n\\n [Completed certifications](${__global.productUrl}/ui/admin#admin:cert:campaigns)\",\n            \"wrap\": true\n        }\n    ],\n    \"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n    \"version\": \"1.2\"\n}",
+      "text": ""
+    }
+  },
+  {
+    "key": "certification_campaign_generated",
+    "medium": "slack",
+    "name": "Certification Campaign Generated",
+    "description": "Sent out when new Certification Campaign Generated",
+    "locale": "en",
+    "slackTemplate": {
+      "text": "New Certification Campaign **$__esc.java($campaign.name)** Generated",
+      "blocks": "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"*New Certification Campaign Generated*\\n\\nNew Certification Campaign *$__esc.java($campaign.name)* has been generated and is available for activation.\\n\\n<${__global.productUrl}/ui/admin#admin:cert:campaigns|Certifications>\"}}]",
+      "attachments": ""
+    }
+  },
+  {
+    "key": "certification_campaign_activated",
+    "medium": "slack",
+    "name": "Certification Campaign Activated",
+    "description": "Sent out when new Certification Campaign Activated",
+    "locale": "en",
+    "slackTemplate": {
+      "text": "New Certification Campaign Activated",
+      "blocks": "#set($_deadline = $__dateTool.toDate(\"yyyy-MM-dd'T'HH:mm:ss'Z'\", $campaign.deadline))\n#set($_formattedDate = $__dateTool.format('E, d MMMM H:m', $_deadline))\n[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"*New Certification Campaign Activated*\\n\\nNew Certification Campaign *$__esc.java($campaign.name)* has been activated. Due date: *$__esc.java($_formattedDate) GMT*\\n\\n<${__global.productUrl}/ui/admin#admin:cert:campaigns|Active certifications>\"}}]",
+      "attachments": "",
+      "customFields":  {
+        "campaignId": "$campaign.id",
+        "campaignStatus":  "$campaign.status"
+      }
+    }
+  },
+  {
+    "key": "certification_campaign_ended",
+    "medium": "slack",
+    "name": "Certification Campaign has Ended",
+    "description": "Sent out when new Certification Campaign has Ended",
+    "locale": "en",
+    "slackTemplate": {
+      "text": "Certification Campaign has Ended",
+      "blocks": "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"*Certification Campaign has Ended*\\n\\nCertification Campaign *$__esc.java($campaign.name)* has ended. Please review the campaign to ensure all certifications included have been completed.\\n\\n<${__global.productUrl}/ui/admin#admin:cert:campaigns|Completed certifications>\"}}]",
+      "attachments": ""
+    }
+  },
+  {
+    "key": "certification_sign_off",
+    "medium": "slack",
+    "name": "Certification Sign-off",
+    "description": "Sent out when Certification Sign-off",
+    "locale": "en",
+    "slackTemplate": {
+      "text": "Certification Sign-off",
+      "blocks": "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"*Certification Sign-off*\\n\\n*$__esc.java($certification.reviewer.name)* has signed off on their certification for campaign *$__esc.java($certification.campaignRef.name)*.\\n\\n<${__global.productUrl}/ui/admin#admin:cert:campaigns|Certifications>\"}}]",
+      "attachments": ""
+    }
+  },
+  {
+    "key": "certification_end_date_modified_notification",
+    "medium": "email",
+    "name": "certification_end_date_modified_notification_name",
+    "description": "certification_end_date_modified_notification_des",
+    "subject": "Access End Date Modified",
+    "header": "Dear $__recipient.name,<br/><br/>",
+    "body": "<p>Your access to the '$accessItemName' $accessItemType is now scheduled to expire on $scheduledSunsetDate.</p>\n<p>If you still need access to '$accessItemName' after this date, you will need to request it again to extend the duration of the access.</p>\n<p>Please contact the $__global.productName administrator if you have any questions.</p>",
+    "footer": "<br/>Thanks,<br/> The $__global.productName Team<br/>",
+    "from": "$__global.emailFromAddress",
+    "replyTo": "$__global.emailFromAddress",
+    "locale": "en"
+  },
+  {
+    "key": "identity_created_notification",
+    "medium": "teams",
+    "name": "Identity Created",
+    "description": "Sent out when new Identity Created",
+    "locale": "en",
+    "teamsTemplate": {
+      "title": "Identity Created",
+      "messageJson": "{\"firstName\":\"$attributes.firstname\", \"lastName\":\"$attributes.lastname\", \"idnAccountName\":\"$identity.name\", \"email\":\"$attributes.email\", \"isManager\":$attributes.isManager}",
+      "text": "",
+      "isSubscription": true,
+      "notificationType": "IDENTITY_CREATED"
+    }
+  },
+  {
+    "key": "identity_attributes_changed_notification",
+    "medium": "teams",
+    "name": "Identity Attributes Changed",
+    "description": "Sent out when Identity Attributes Changed",
+    "locale": "en",
+    "teamsTemplate": {
+      "title": "Identity Attributes Changed",
+      "messageJson": "#set($_changes = $__util.getObjectByJsonPath($__contentJson, '$.changes[*]'))\n{\"idnAccountName\": \"$identity.name\", \"changes\":[ #foreach($_change in $_changes)\n#if($_change.attribute != \"lastLoginTimestamp\")\n{\"attribute\":\"$_change.attribute\", \"oldValue\":#if($_change.attribute == \"manager\")#if($_change.oldValue == $null || $_change.oldValue.name == $null)\"<empty>\"#{else}\"$_change.oldValue.name\"#end#{else}\"$!_change.oldValue\"#end, \"newValue\":#if($_change.attribute == \"manager\")#if($_change.newValue == $null || $_change.newValue.name == $null)\"<empty>\"#{else}\"$_change.newValue.name\"#end#{else}\"$!_change.newValue\"#end}#end\n#if($foreach.hasNext && $_change.attribute != \"lastLoginTimestamp\")\n,#end\n#end\n]}",
+      "text": "",
+      "isSubscription": true,
+      "notificationType": "IDENTITY_ATTRIBUTES_CHANGED"
+    }
+  },
+  {
+    "key": "identity_deleted_notification",
+    "medium": "teams",
+    "name": "Identity Deleted",
+    "description": "Sent out when Identity Deleted",
+    "locale": "en",
+    "teamsTemplate": {
+      "title": "Identity Deleted",
+      "messageJson": "{\"firstName\":\"$attributes.firstname\", \"lastName\":\"$attributes.lastname\", \"idnAccountName\":\"$identity.name\", \"email\":\"$attributes.email\", \"isManager\":$attributes.isManager}",
+      "text": "",
+      "isSubscription": true,
+      "notificationType": "IDENTITY_DELETED"
+    }
+  },
+  {
+    "key": "identity_created_notification",
+    "medium": "slack",
+    "name": "Identity Created",
+    "description": "Sent out when new Identity Created",
+    "locale": "en",
+    "slackTemplate": {
+      "text": "Identity Created",
+      "blocks": "{\"firstName\":\"$attributes.firstname\", \"lastName\":\"$attributes.lastname\", \"idnAccountName\":\"$identity.name\", \"email\":\"$attributes.email\", \"isManager\":$attributes.isManager}",
+      "attachments": "",
+      "isSubscription": true,
+      "notificationType": "IDENTITY_CREATED"
+    }
+  },
+  {
+    "key": "identity_attributes_changed_notification",
+    "medium": "slack",
+    "name": "Identity Attributes Changed",
+    "description": "Sent out when Identity Attributes Changed",
+    "locale": "en",
+    "slackTemplate": {
+      "text": "Identity Attributes Changed",
+      "blocks": "#set($_changes = $__util.getObjectByJsonPath($__contentJson, '$.changes[*]'))\n{\"idnAccountName\": \"$identity.name\", \"changes\":[ #foreach($_change in $_changes)\n#if($_change.attribute != \"lastLoginTimestamp\")\n{\"attribute\":\"$_change.attribute\", \"oldValue\":#if($_change.attribute == \"manager\")#if($_change.oldValue == $null || $_change.oldValue.name == $null)\"<empty>\"#{else}\"$_change.oldValue.name\"#end#{else}\"$!_change.oldValue\"#end, \"newValue\":#if($_change.attribute == \"manager\")#if($_change.newValue == $null || $_change.newValue.name == $null)\"<empty>\"#{else}\"$_change.newValue.name\"#end#{else}\"$!_change.newValue\"#end}#end\n#if($foreach.hasNext && $_change.attribute != \"lastLoginTimestamp\")\n,#end\n#end\n]}",
+      "attachments": "",
+      "isSubscription": true,
+      "notificationType": "IDENTITY_ATTRIBUTES_CHANGED"
+    }
+  },
+  {
+    "key": "identity_deleted_notification",
+    "medium": "slack",
+    "name": "Identity Deleted",
+    "description": "Sent out when Identity Deleted",
+    "locale": "en",
+    "slackTemplate": {
+      "text": "Identity Deleted",
+      "blocks": "{\"firstName\":\"$attributes.firstname\", \"lastName\":\"$attributes.lastname\", \"idnAccountName\":\"$identity.name\", \"email\":\"$attributes.email\", \"isManager\":$attributes.isManager}",
+      "attachments": "",
+      "isSubscription": true,
+      "notificationType": "IDENTITY_DELETED"
+    }
+  },
+  {
+    "key": "feedback_notification",
+    "medium": "teams",
+    "name": "Feedback Notification",
+    "description": "Feedback",
+    "locale": "en",
+    "teamsTemplate": {
+      "title": "Feedback",
+      "messageJson": "{\"$schema\":\"http://adaptivecards.io/schemas/adaptive-card.json\",\"type\":\"AdaptiveCard\",\"version\":\"1.2\",\"wrap\":true,\"body\":[{\"type\":\"TextBlock\",\"text\":\"How satisfied are you with the SailPoint app?\",\"size\":\"medium\",\"weight\":\"bolder\",\"wrap\":true},{\"type\":\"TextBlock\",\"text\":\"SailPoint is constantly working on app improvements and we’d love to hear from you.\",\"wrap\":true}],\"actions\":[{\"type\":\"Action.ShowCard\",\"title\":\"\uD83D\uDE21 Very Dissatisfied\",\"card\":{\"version\":\"1.2\",\"type\":\"AdaptiveCard\",\"body\":[{\"type\":\"TextBlock\",\"text\":\"Would you like to provide more details? (optional)\",\"wrap\":true,\"spacing\":\"small\",\"weight\":\"bolder\",\"size\":\"small\"},{\"type\":\"Input.Text\",\"id\":\"comment_1\",\"isMultiline\":true,\"title\":\"Would you like to provide more details? (optional)\"}],\"actions\":[{\"type\":\"Action.Submit\",\"title\":\"Submit\",\"data\":{\"actionType\":\"feedback\",\"rate\":\"1\"}}],\"$schema\":\"http://adaptivecards.io/schemas/adaptive-card.json\"}},{\"type\":\"Action.ShowCard\",\"title\":\"\uD83D\uDE41 Dissatisfied\",\"card\":{\"version\":\"1.2\",\"type\":\"AdaptiveCard\",\"body\":[{\"type\":\"TextBlock\",\"text\":\"Would you like to provide more details? (optional)\",\"wrap\":true,\"spacing\":\"small\",\"weight\":\"bolder\",\"size\":\"small\"},{\"type\":\"Input.Text\",\"id\":\"comment_2\",\"isMultiline\":true,\"title\":\"Would you like to provide more details? (optional)\"}],\"actions\":[{\"type\":\"Action.Submit\",\"title\":\"Submit\",\"data\":{\"actionType\":\"feedback\",\"rate\":\"2\"}}],\"$schema\":\"http://adaptivecards.io/schemas/adaptive-card.json\"}},{\"type\":\"Action.ShowCard\",\"title\":\"\uD83D\uDE10 Neutral\",\"card\":{\"version\":\"1.2\",\"type\":\"AdaptiveCard\",\"body\":[{\"type\":\"TextBlock\",\"text\":\"Would you like to provide more details? (optional)\",\"wrap\":true,\"spacing\":\"small\",\"weight\":\"bolder\",\"size\":\"small\"},{\"type\":\"Input.Text\",\"id\":\"comment_3\",\"isMultiline\":true,\"title\":\"Would you like to provide more details? (optional)\"}],\"actions\":[{\"type\":\"Action.Submit\",\"title\":\"Submit\",\"data\":{\"actionType\":\"feedback\",\"rate\":\"3\"}}],\"$schema\":\"http://adaptivecards.io/schemas/adaptive-card.json\"}},{\"type\":\"Action.ShowCard\",\"title\":\"\uD83D\uDE42 Satisfied\",\"card\":{\"version\":\"1.2\",\"type\":\"AdaptiveCard\",\"body\":[{\"type\":\"TextBlock\",\"text\":\"Would you like to provide more details? (optional)\",\"wrap\":true,\"spacing\":\"small\",\"weight\":\"bolder\",\"size\":\"small\"},{\"type\":\"Input.Text\",\"id\":\"comment_4\",\"isMultiline\":true,\"title\":\"Would you like to provide more details? (optional)\"}],\"actions\":[{\"type\":\"Action.Submit\",\"title\":\"Submit\",\"data\":{\"actionType\":\"feedback\",\"rate\":\"4\"}}],\"$schema\":\"http://adaptivecards.io/schemas/adaptive-card.json\"}},{\"type\":\"Action.ShowCard\",\"title\":\"\uD83E\uDD29 Very Satisfied\",\"card\":{\"version\":\"1.2\",\"type\":\"AdaptiveCard\",\"body\":[{\"type\":\"TextBlock\",\"text\":\"Would you like to provide more details? (optional)\",\"wrap\":true,\"spacing\":\"small\",\"weight\":\"bolder\",\"size\":\"small\"},{\"type\":\"Input.Text\",\"id\":\"comment_5\",\"isMultiline\":true,\"title\":\"Would you like to provide more details? (optional)\"}],\"actions\":[{\"type\":\"Action.Submit\",\"title\":\"Submit\",\"data\":{\"actionType\":\"feedback\",\"rate\":\"5\"}}],\"$schema\":\"http://adaptivecards.io/schemas/adaptive-card.json\"}}]}",
+      "text": ""
+    }
+  },
+  {
+    "key": "feedback_notification",
+    "medium": "slack",
+    "name": "Feedback Notification",
+    "description": "Feedback",
+    "locale": "en",
+    "slackTemplate": {
+      "text": "Feedback",
+      "blocks": "[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\":writing_hand: *How satisfied are you with the SailPoint for Slack app?* \\n SailPoint is constantly working on app improvements and we`d love to hear from you.\"}},{\"type\":\"actions\",\"elements\":[{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\":rage: Very Dissatisfied\",\"emoji\":true},\"value\":\"FEEDBACK_RATE_ONE\",\"action_id\":\"feedback-rate-one-action-id\"},{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\":slightly_frowning_face: Dissatisfied\",\"emoji\":true},\"value\":\"FEEDBACK_RATE_TWO\",\"action_id\":\"feedback-rate-two-action-id\"},{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\":neutral_face: Neutral\",\"emoji\":true},\"value\":\"FEEDBACK_RATE_THREE\",\"action_id\":\"feedback-rate-three-action-id\"},{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\":slightly_smiling_face: Satisfied\",\"emoji\":true},\"value\":\"FEEDBACK_RATE_FOUR\",\"action_id\":\"feedback-rate-four-action-id\"},{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\":star-struck: Very Satisfied\",\"emoji\":true},\"value\":\"FEEDBACK_RATE_FIVE\",\"action_id\":\"feedback-rate-five-action-id\"}]}]",
+      "attachments": ""
+    }
+  },
+  {
+    "key" : "commonRoleMiningCompletedEmailKey",
+    "name": "commonRoleMiningCompletedEmailKey_name",
+    "medium": "email",
+    "description": "commonRoleMiningCompletedEmailKey_des",
+    "subject": "A [${__global.productName}] Common Access Role Discovery Notification",
+    "header": "Dear ${__recipient.name},<br/><br/>",
+    "body": "<p>You're receiving this email because you started a Role Discovery session to discover common access roles.</p>#if($entitlementCount > 0)<p>Your potential common access role is now ready.</p><p>Click <a href=\"${__global.productUrl}/ui/w/role-mining-session/$roleMiningSessionId/potential-roles/$potentialRoleId/review\">here</a> to review and create this new role in ${__global.productName}.</p>#else<p>No common access roles were discovered for the defined group of identities. Identities in the defined group did not share highly common entitlements.</p>#end",
+    "footer": "<br/>Thanks,<br/> The ${__global.productName} Team<br/>",
+    "from": "no-reply@sailpoint.com",
+    "replyTo": "no-reply@sailpoint.com",
+    "locale": "en"
+  }
+]

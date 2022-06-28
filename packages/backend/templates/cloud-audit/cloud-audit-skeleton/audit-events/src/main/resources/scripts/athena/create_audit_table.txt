@@ -1,0 +1,29 @@
+CREATE EXTERNAL TABLE IF NOT EXISTS $AUDIT_ATHENA_ORG_TABLE_NAME(
+  pod string,
+  created timestamp,
+  id string,
+  action string,
+  actor struct<name:string, type:string>,
+  target struct<name:string, type:string>,
+  stack string,
+  trackingnumber string,
+  ipaddress string,
+  details string,
+  attributes map<string, string>,
+  objects array<string>,
+  operation string,
+  status string,
+  technicalname string,
+  name string)
+PARTITIONED BY (
+  org string,
+  type string,
+  date date)
+ROW FORMAT SERDE
+  'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
+STORED AS INPUTFORMAT
+  'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat'
+OUTPUTFORMAT
+  'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
+LOCATION
+  '$S3_TENANT_PARQUET_STORAGE_LOCATION'

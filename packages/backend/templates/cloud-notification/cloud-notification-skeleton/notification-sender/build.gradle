@@ -1,0 +1,36 @@
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				counter = 'COMPLEXITY'
+				minimum = 0.66
+			}
+		}
+	}
+}
+dependencies {
+	api(platform("com.sailpoint:atlas-platform:$project.ATLAS_VERSION"))
+
+	compile(project(":notification-common"))
+	compile("com.amazonaws:aws-java-sdk-ses")
+	compile("com.amazonaws:aws-java-sdk-sns")
+	compile("com.amazonaws:aws-java-sdk-sts")
+	compile("com.sailpoint:atlas-dynamodb")
+	compile("javax.mail:mail:1.4.7")
+
+	testCompile("com.sailpoint:atlas-test")
+}
+
+task copyNativeDeps(type: Copy) {
+	from(configurations.compile + configurations.testCompile) {
+		include '*.dll'
+		include '*.dylib'
+		include '*.so'
+	}
+	into 'build/libs'
+}
+
+test {
+	dependsOn copyNativeDeps
+	systemProperty "java.library.path", 'build/libs'
+}

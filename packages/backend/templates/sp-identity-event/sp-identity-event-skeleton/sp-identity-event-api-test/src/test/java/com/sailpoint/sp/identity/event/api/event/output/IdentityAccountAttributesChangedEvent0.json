@@ -1,0 +1,31 @@
+{
+	"identity": {
+		"id":'#(externalId)',
+		"name":"leroy.sitara",
+		"type":"IDENTITY"
+	},
+	"account": {
+		"id":"2c9180845e865b19015e9ff4d2ef5108",
+		"name":"jeff.sitara",
+		"nativeIdentity":"leroy.sitara",
+		"type":"ACCOUNT",
+		"uuid":"{111}"
+	},
+	"source": {
+		"id":"2c9180855e820007015e9ff4b5a735cc",
+		"name":"EndToEnd-GenericSource",
+		"type":"SOURCE"
+	},
+	"changes" : [
+		{
+			"attribute":"country",
+			"oldValue":"GG",
+			"newValue":"GB"
+		},
+		{
+			"attribute":"name",
+			"oldValue":"leroy.sitara",
+			"newValue":"jeff.sitara"
+		}
+	]
+}

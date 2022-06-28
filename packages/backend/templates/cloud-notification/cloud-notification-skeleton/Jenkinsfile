@@ -1,0 +1,402 @@
+/*
+ * Copyright (C) 2018 SailPoint Technologies, Inc.  All rights reserved.
+ */
+
+// Load the shared release utils which provides several SailPoint specific commands such as
+// drydockDeploy() and createDeployTicket. The @ sign specifies a specific tag within the
+// shared library to use. Note: The "_" underscore is not a typo.
+// https://github.com/sailpoint/jenkins-release-utils
+@Library('sailpoint/jenkins-release-utils')_
+
+/**
+ * Jenkins release pipeline for the Hermes service.
+ */
+pipeline {
+	agent none
+
+	options {
+		// Aborts job if run time is over 24 hours
+		timeout(time: 24, unit: 'HOURS')
+
+		// Add timestamps to console output
+		timestamps()
+
+		// Don't allow concurrent builds to run
+		disableConcurrentBuilds()
+
+		// Keep builds for a year + 30 days.  (For Auditing)
+		buildDiscarder(logRotator(daysToKeepStr: '395'))
+	}
+
+	triggers {
+		// Poll for changes every 5 minutes.
+		pollSCM('H/5 * * * *')
+	}
+
+	environment {
+		// The scrum which owns this component
+		JIRA_PROJECT = 'PLTCORE'
+
+		// The prefix in Jira for the deployment ticket name
+		JIRA_TICKET_PREFIX = 'Hermes'
+
+		// The component name in Jira for the deployment ticket
+		JIRA_COMPONENT = 'Hermes'
+
+		// The name of the build artifact to generate
+		BUILD_NUMBER = "${env.BUILD_NUMBER}"
+
+		// Which channel to report successes & failures too.
+		SLACK_CHANNEL = "#team-eng-platform-core-jnk"
+
+		// The branch releases can be cut from.
+		RELEASE_BRANCH = "master"
+
+		// The name of the service being released.
+		SERVICE_TYPE = "hermes"
+
+		// The maximum amount of time (in minutes) for tests to take before they are auto failed.
+		TEST_TIMEOUT = 90
+
+		// The maximum amount of time (in minutes) for deploys to take before they are auto failed.
+		DEPLOY_TIMEOUT = 20
+
+		// The maximum amount of time (in minutes) for the build of hermes to complete
+		BUILD_TIMEOUT = 20
+
+		// The branch of tests to use.
+		TEST_BRANCH = "master"
+
+		// The GitHub url
+		GITHUB_REPO = "git@github.com:sailpoint/cloud-notification.git"
+
+		// The GitHub repository name
+		GITHUB_REPO_NAME = "sailpoint/cloud-notification"
+
+		// The name of the module where the api (karate) tests are located
+		API_TEST_MODULE_NAME = 'api-test'
+	}
+
+	stages {
+		stage('Build Hermes') {
+			when {
+				branch env.RELEASE_BRANCH
+			}
+
+			steps {
+				echo "${env.SERVICE_TYPE} service release pipeline for ${env.BUILD_NUMBER} is starting."
+				sendSlackNotification(
+					env.SLACK_CHANNEL,
+					"${env.SERVICE_TYPE} service release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> is starting.",
+					utils.NOTIFY_START
+				)
+
+				script {
+					node {
+						label 'devaws'
+						utils.addJavaToPath()
+
+						// Check out code from repository. NOTE: This will be defined in the Jenkins job
+						checkout scm
+
+						echo "Starting build of ${env.SERVICE_TYPE}"
+
+						sh("mkdir -p ${WORKSPACE}/.aws; cp -r $HOME/.aws/* ${WORKSPACE}/.aws/")
+						sh("make VERSION=${env.BUILD_NUMBER} docker/push")
+
+						// Git config
+						sh "git config --global user.email jenkins@construct.identitysoon.com"
+						sh "git config --global user.name Jenkins"
+
+						// Create and push a git tag for build
+						TAG_NAME="jenkins/${env.SERVICE_TYPE}/${env.BUILD_NUMBER}"
+						sh "git tag -a -f -m 'Built by Pipeline' ${TAG_NAME}"
+						sh "git push origin tag ${TAG_NAME}"
+					}
+				}
+			}
+		}
+
+		stage('Deploy to Bermuda') {
+			when {
+				branch env.RELEASE_BRANCH
+			}
+
+			agent {
+				node {
+					label 'devaws'
+				}
+			}
+
+			steps {
+				echo "Deploying ${env.SERVICE_TYPE} build ${env.BUILD_NUMBER} to bermuda."
+				script {
+					def attempts = 0
+					waitUntil {
+						try {
+							sendSlackNotification(
+								env.SLACK_CHANNEL,
+								"Deploy of ${env.SERVICE_TYPE} <${env.BUILD_URL}|${env.BUILD_NUMBER}> to bermuda is starting.",
+								utils.NOTIFY_START
+							)
+
+							// Params: pod, serviceType, version, (Optionals) deployTimeout, dryDockHost, uiModuleName, uiModuleType
+							drydockDeploy('bermuda', env.SERVICE_TYPE, env.BUILD_NUMBER, Integer.valueOf(env.DEPLOY_TIMEOUT))
+
+							echo "Completed deployment to bermuda"
+							return true
+						} catch(error) {
+							echo "Bermuda deployment attempt failed with error: ${error}"
+							attempts++
+
+							sendSlackNotification(
+									env.SLACK_CHANNEL,
+									"${env.SERVICE_TYPE} release pipeline for <${env.BUILD_URL}/input|${env.BUILD_NUMBER}> failed on bermuda deployment ${attempts} time(s), should I try again? \nError: ${error}",
+									utils.NOTIFY_FAILURE
+							)
+
+							utils.promptToRetryTests(utils.BERMUDA_POD, utils.DEPLOYMENT_STEP, attempts)
+							return false
+						}
+					}
+				}
+			}
+		}
+
+		stage('Verify Bermuda') {
+			when {
+				branch env.RELEASE_BRANCH
+			}
+
+			steps {
+				script {
+					def attempts = 0
+					waitUntil {
+						try {
+
+							node {
+								label 'devaws'
+								utils.addJavaToPath()
+								env.AWS_REGION='us-west-2'
+								env.ATLAS_JWT_KEY_PARAM_NAME='/service/oathkeeper/dev/encryption_string'
+
+								// Test the build on bermuda
+								// support-user credentials are defined in Pipeline Jenkins config
+								withCredentials([usernamePassword(credentialsId: 'support-user', usernameVariable: 'username', passwordVariable: 'password')]) {
+									timeout(time: Integer.valueOf(env.TEST_TIMEOUT), unit: 'MINUTES') {
+										echo "Verify build ${env.BUILD_NUMBER} on bermuda"
+										atlasAPIGatewayServiceTest([
+												test_branch      : 'master',
+												test_repo        : env.GITHUB_REPO,
+												test_org_url     : 'https://api-e2e-ber.api.cloud.sailpoint.com',
+												test_api_username: username,
+												test_api_password: password,
+												module_name      : env.API_TEST_MODULE_NAME,
+												show_info        : 'true',
+												pod              : 'bermuda',
+												attempts         : attempts]
+										)
+									}
+								}
+							}
+							return true
+						} catch(error) {
+							echo "Bermuda verification attempt failed with error: ${error}"
+							attempts++
+
+							sendSlackNotification(
+								env.SLACK_CHANNEL,
+								"${env.SERVICE_TYPE} release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> failed on bermuda ${attempts} time(s), should I try again?<br/>Error: ${error}",
+								utils.NOTIFY_FAILURE
+							)
+
+							utils.promptToRetryTests(utils.BERMUDA_POD, utils.VERIFICATION_STEP, attempts)
+							return false
+						}
+					}
+				}
+			}
+		}
+
+		stage('Deploy to Lighthouse') {
+			when {
+				branch env.RELEASE_BRANCH
+			}
+
+			agent {
+				label 'devaws'
+			}
+
+			steps {
+				script {
+					sendSlackNotification(
+						env.SLACK_CHANNEL,
+						"Deploy of ${env.SERVICE_TYPE} <${env.BUILD_URL}|${env.BUILD_NUMBER}> to lighthouse is starting.",
+						utils.NOTIFY_START
+					)
+
+					def pods = [
+							"dev01-useast1",
+							"lighthouse",
+							"megapod-useast1",
+							"perf01-useast2"
+					]
+
+					def stepsForParallel = [:]
+					for (int i = 0; i < pods.size(); i++) {
+						def pod = pods[i]
+						def delay = i*2
+						stepsForParallel["Deploy to ${pod}"] = { ->
+
+							// Drydock doesn't like you spamming it.
+							sleep(time: delay, unit: 'SECONDS')
+
+							echo "Deploy to ${pod}..."
+							// Params: pod, serviceType, version, (Optionals) deployTimeout, dryDockHost, uiModuleName, uiModuleType
+							drydockDeploy(pod, env.SERVICE_TYPE, env.BUILD_NUMBER, Integer.valueOf(env.DEPLOY_TIMEOUT))
+
+							echo "Completed deploy to ${pod}"
+						}
+					}
+
+					echo "Deploying to pods: ${pods}"
+
+					def attempts = 0
+					waitUntil {
+						try {
+							parallel stepsForParallel
+
+							echo "Completed deployment to all pods: ${pods}"
+							return true
+						} catch(error) {
+							echo "${pods} deployment attempt failed with error: ${error}"
+							attempts++
+
+							slackSendNotification(
+									env.SLACK_CHANNEL,
+									"${env.SERVICE_TYPE} release pipeline for <${env.BUILD_URL}/input|${env.BUILD_NUMBER}> failed on ${pods} deployment ${attempts} time(s), should I try again?\nError: ${error}",
+									utils.NOTIFY_FAILURE
+							)
+
+							utils.promptToRetryTests(utils.LIGHTHOUSE_POD, utils.DEPLOYMENT_STEP, attempts)
+							return false
+						}
+					}
+
+				}
+			}
+		}
+
+		stage('Verify Lighthouse') {
+			when {
+				branch env.RELEASE_BRANCH
+			}
+
+			steps {
+				script {
+					def attempts = 0
+					waitUntil {
+						try {
+
+							node {
+								label 'devaws'
+								utils.addJavaToPath()
+								env.ATLAS_JWT_KEY_PARAM_NAME='/service/oathkeeper/dev/encryption_string'
+								env.AWS_REGION='us-east-1'
+
+								// Test the build on lighthouse
+								// support-user credentials are defined in Pipeline Jenkins config
+								withCredentials([usernamePassword(credentialsId: 'support-user', usernameVariable: 'username', passwordVariable: 'password')]) {
+									timeout(time: Integer.valueOf(env.TEST_TIMEOUT), unit: 'MINUTES') {
+										echo "Verify build ${env.BUILD_NUMBER} on lighthouse"
+										atlasAPIGatewayServiceTest([
+												test_branch      : 'master',
+												test_repo        : env.GITHUB_REPO,
+												test_org_url     : 'https://api-e2e-light.api.cloud.sailpoint.com',
+												test_api_username: username,
+												test_api_password: password,
+												module_name      : env.API_TEST_MODULE_NAME,
+												show_info        : 'true',
+												pod              : 'lighthouse',
+												attempts         : attempts]
+										)
+									}
+								}
+							}
+							return true
+						} catch(error) {
+							echo "Lighthouse verification attempt failed with error: ${error}"
+							attempts++
+
+							sendSlackNotification(
+								env.SLACK_CHANNEL,
+								"${env.SERVICE_TYPE} release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> failed on lighthouse ${attempts} time(s), should I try again?<br/>Error: ${error}",
+								utils.NOTIFY_FAILURE
+							)
+
+							utils.promptToRetryTests(utils.LIGHTHOUSE_POD, utils.VERIFICATION_STEP, attempts)
+							return false
+						}
+					}
+				}
+			}
+		}
+
+		stage('Create Deployment Ticket') {
+			when {
+				branch env.RELEASE_BRANCH
+			}
+
+			agent {
+				label 'devaws'
+			}
+
+			steps {
+				script {
+					def currentlyDeployedBuildNumber = getCurrentlyDeployedBuild([release_component: "${env.SERVICE_TYPE}", is_dev: "true"])
+					if (currentlyDeployedBuildNumber?.trim()) {
+						createC3P0DeployTicket([
+								project          : env.JIRA_PROJECT,
+								repository       : env.GITHUB_REPO_NAME,
+								src_tag          : "jenkins/${env.SERVICE_TYPE}/${currentlyDeployedBuildNumber}",
+								dest_tag         : "jenkins/${env.SERVICE_TYPE}/${env.BUILD_NUMBER}",
+								application      : "atlas",
+								build_number     : env.BUILD_NUMBER,
+								components       : env.JIRA_COMPONENT,
+								release_component: env.JIRA_COMPONENT
+						])
+					}
+					else {
+						echo "No previously deployed versions of ${env.SERVICE_TYPE} were found."
+					}
+				}
+
+				echo "All done, deployment is ready for approval"
+			}
+		}
+	}
+
+	post {
+		success {
+			sendSlackNotification(
+				env.SLACK_CHANNEL,
+				"${env.SERVICE_TYPE} release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> was successful.",
+				utils.NOTIFY_SUCCESS
+			)
+		}
+		failure {
+			sendSlackNotification(
+				env.SLACK_CHANNEL,
+				"${env.SERVICE_TYPE} release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> failed.",
+				utils.NOTIFY_FAILURE
+			)
+		}
+		aborted {
+			sendSlackNotification(
+				env.SLACK_CHANNEL,
+				"${env.SERVICE_TYPE} release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> was aborted.",
+				utils.NOTIFY_ABORTED
+			)
+		}
+	}
+}

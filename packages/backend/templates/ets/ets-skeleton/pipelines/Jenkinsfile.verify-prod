@@ -1,0 +1,75 @@
+@Library("sailpoint/jenkins-release-utils")_
+// This file is used for production tests and canary tests
+parameters {
+    string (name: 'username',  defaultValue: 'slpt.support')
+    string (name: 'isProd',  defaultValue: 'true')
+    string (name: 'branch',  defaultValue: 'master')
+    string (name: 'awsRegion',  defaultValue: 'us-east-1')
+}
+
+pipeline {
+    environment {
+        ATLAS_JWT_KEY_PARAM_NAME="/service/oathkeeper/dev/encryption_string"
+        AWS_REGION="${awsRegion}"
+        SLACK_CHANNEL = "#team-eng-platform-core-jnk"
+        SERVICE_NAME = "ets"
+    }
+
+    agent {
+        kubernetes {
+            yaml "${libraryResource 'pods/jdk11-container.yaml'}"
+        }
+    }
+
+    stages {
+        stage('Checkout SCM') {
+            steps {
+                checkout(
+                [$class: 'GitSCM',
+                branches: [[name: 'origin/${branch}']],
+                doGenerateSubmoduleConfigurations: false,
+                extensions: [], submoduleCfg: [],
+                userRemoteConfigs: [[credentialsId: 'git-automation-ssh', url: 'git@github.com:sailpoint/ets.git']]])
+            }
+        }
+        stage('Run ets Karate tests') {
+            steps {
+                container('jdk11') {
+                    assumePodRole {
+                        sh """
+                        ./gradlew :ets-api-test:clean :ets-api-test:test -DapiUrl=${apiUrl} -DisProd=${isProd} -DetsBranch=${branch} -Dusername=${username} -p ets-api-test -Dorg.url=${apiUrl} -Dorg.username=${username} -Dorg.isProd=${isProd} -PapiTest=true --info test
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts allowEmptyArchive: true, artifacts: 'ets-api-test/build/surefire-reports/**/*, ets-api-test/build/cucumber-html-reports/**/*', defaultExcludes: false
+        }
+
+        success {
+            sendSlackNotification(
+                env.SLACK_CHANNEL,
+                "${env.SERVICE_NAME} E2E verify prod pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> was successful.",
+                utils.NOTIFY_SUCCESS
+            )
+        }
+        failure {
+            sendSlackNotification(
+                env.SLACK_CHANNEL,
+                "${env.SERVICE_NAME} E2E verify prod pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> failed.",
+                utils.NOTIFY_FAILURE
+            )
+        }
+        aborted {
+            sendSlackNotification(
+                env.SLACK_CHANNEL,
+                "${env.SERVICE_NAME} E2E verify prod pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> was aborted.",
+                utils.NOTIFY_ABORTED
+            )
+        }
+    }
+}

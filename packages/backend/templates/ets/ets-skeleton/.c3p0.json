@@ -1,0 +1,18 @@
+{
+  "versionTagTemplate": "jenkins/ets/$version",
+  "dependencies": [{
+    "repository": "sailpoint/atlas-boot",
+    "versionExtractor": {
+      "type": "propertyFile",
+      "file": "gradle.properties",
+      "key": "ATLAS_BOOT_VERSION"
+    }
+  },{
+    "repository": "sailpoint/cloud-api-test",
+    "versionExtractor": {
+      "type": "propertyFile",
+      "file": "gradle.properties",
+      "key": "API_TEST_VERSION"
+    }
+  }]
+}

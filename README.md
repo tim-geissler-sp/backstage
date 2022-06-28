@@ -48,6 +48,11 @@ yarn install
 ```
 yarn dev
 ```
+## Docker Setup
+The root Dockerfile is configured for a Multi-stage Build.
+Build the Docker image using ```docker image build -t backstage .``` from project root,
+and execute a container locally using ```docker run -it -p 7007:7007 backstage``` (Backstage will be accessible through port 7007 - ```http://localhost:7007```),
+
 
 ## Note for Apple Silicon: 
 - Run all commands through a Rosetta 2 terminal with the prefix ```arch -x86_64```,

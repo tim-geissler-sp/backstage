@@ -1,0 +1,25 @@
+dependencies {
+	implementation("com.sailpoint:mantis-event")
+
+	implementation("com.jayway.jsonpath:json-path")
+	implementation("org.apache.commons:commons-csv:1.5")
+}
+
+jacocoTestCoverageVerification {
+	afterEvaluate {
+		getClassDirectories().setFrom(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+				'com/sailpoint/audit/service/model/*',
+			])
+		})
+	}
+
+	violationRules {
+		rule {
+			limit {
+				counter = 'COMPLEXITY'
+				minimum = 0.84
+			}
+		}
+	}
+}

@@ -1,0 +1,168 @@
+plugins {
+	id 'java-library'
+	id 'jacoco'
+	id "com.contrastsecurity.contrastplugin" version "2.0.0"
+	id "io.freefair.lombok" version "5.3.3.3"
+	id "io.freefair.aspectj.post-compile-weaving" version "5.3.3.3"
+}
+
+allprojects {
+	apply plugin: 'com.contrastsecurity.contrastplugin'
+	apply plugin: 'io.freefair.lombok'
+
+	generateLombokConfig.enabled = false
+
+	repositories {
+		mavenCentral()
+
+		maven {
+			name "release"
+			url "s3://sptcbu-mvn-repo/release"
+			authentication {
+				awsIm(AwsImAuthentication)
+			}
+		}
+
+		maven {
+			name "snapshot"
+			url "s3://sptcbu-mvn-repo/snapshot"
+			authentication {
+				awsIm(AwsImAuthentication)
+			}
+		}
+
+		maven {
+			name "DynamoDB Local Release Repository - US West (Oregon) Region"
+			url "https://s3-us-west-2.amazonaws.com/dynamodb-local/release"
+		}
+	}
+
+	contrastConfiguration {
+		username = "idn-security-triage@sailpoint.com"
+		apiKey = System.getProperty('contrastApiKey')
+		serviceKey = System.getProperty('contrastServiceKey')
+		orgUuid = System.getProperty('contrastOrgUuid')
+		apiUrl = "https://app.contrastsecurity.com/Contrast/api"
+		appName = "IDNPlatformApps"
+		serverName = "aer-server"
+		minSeverity = "Medium"
+	}
+}
+
+subprojects { subproject ->
+	apply plugin: 'java-library'
+	apply plugin: 'jacoco'
+	apply plugin: 'io.freefair.aspectj.post-compile-weaving'
+
+	aspectj {
+		version = "1.9.5"
+	}
+
+	group = "com.sailpoint"
+	version = project.hasProperty('customVersion') ? project['customVersion'] : 'integration-SNAPSHOT'
+
+	java {
+		toolchain {
+			languageVersion = JavaLanguageVersion.of(8)
+		}
+	}
+
+	compileJava {
+		options.encoding = 'UTF-8'
+		ajc.options.compilerArgs << "-Xlint:ignore" << "-warn:none"
+	}
+
+	compileTestJava {
+		options.encoding = 'UTF-8'
+		ajc.options.compilerArgs << "-Xlint:ignore" << "-warn:none"
+	}
+
+	dependencies {
+		implementation(platform("com.sailpoint:mantis-platform-bom:$project.MANTIS_PLATFORM_VERSION"))
+		implementation("com.sailpoint:mantis-event")
+		implementation("com.sailpoint:atlas-logging")
+
+		aspect(platform("com.sailpoint:mantis-platform-bom:$project.MANTIS_PLATFORM_VERSION"))
+		aspect("com.sailpoint:metrics")
+		aspect("com.sailpoint:mantis-platform")
+
+		implementation("com.sailpoint:cloud-search-api-client:$project.CLOUD_SEARCH_VERSION")
+		implementation("com.sailpoint:cloud-base-search:$project.CLOUD_SEARCH_VERSION")
+
+		implementation(platform("com.amazonaws:aws-java-sdk-bom:$project.AWS_SDK_VERSION"))
+		implementation("com.amazonaws:aws-java-sdk-kinesis")
+		implementation("com.amazonaws:aws-java-sdk-athena")
+		implementation("com.amazonaws:aws-java-sdk-resourcegroupstaggingapi")
+		implementation("com.amazonaws:aws-java-sdk-s3")
+
+		implementation("org.apache.avro:avro:1.10.1")
+		implementation("org.apache.parquet:parquet-avro:1.10.1")
+		implementation("org.apache.hadoop:hadoop-common:3.3.0")
+		implementation("javax.ws.rs:javax.ws.rs-api:2.1.1")
+		implementation("javax.servlet:javax.servlet-api:4.0.1")
+
+		testImplementation("com.sailpoint:mantis-test")
+	}
+
+	jacocoTestReport {
+		reports {
+			xml.enabled true
+		}
+
+		afterEvaluate {
+			classDirectories.setFrom(files(classDirectories.files.collect {
+				fileTree(dir: it, exclude: 'com/sailpoint/audit/service/model/**')
+			}))
+		}
+
+		doLast {
+			def coverageRule = subproject.jacocoTestCoverageVerification.violationRules.rules.find { rule ->
+				rule.limits.find { limit ->
+					limit.counter.equals('COMPLEXITY')
+				}
+			}
+
+			if (coverageRule) {
+
+				def report = file("${jacoco.reportsDir}/test/jacocoTestReport.xml")
+				logger.lifecycle("Checking coverage results: ${report}")
+
+				def parser = new XmlParser()
+				parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+				parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
+				def results = parser.parse(report)
+
+				def percentage = { counter ->
+					def covered = counter.'@covered' as Double
+					def missed = counter.'@missed' as Double
+					((covered / (covered + missed)) * 100).round(2)
+				}
+
+				def counters = results.counter
+				def metrics = [:]
+				metrics << [
+					'complexity': percentage(counters.find { it.'@type'.equals('COMPLEXITY') })
+				]
+
+				int limit = coverageRule.limits.get(0).minimum * 100
+
+				if (metrics.complexity >= limit) {
+					logger.quiet("[${subproject.name}] Passed Code Coverage Checks with ${metrics.complexity}% (minimum ${limit}%)")
+				}
+			}
+		}
+	}
+
+
+	if (subproject.hasProperty('jacocoTestCoverageVerification')) {
+		subproject.check.dependsOn subproject.jacocoTestCoverageVerification
+		subproject.jacocoTestCoverageVerification.dependsOn subproject.jacocoTestReport
+	}
+
+	test {
+		failFast = true
+		testLogging {
+			exceptionFormat = 'full'
+		}
+	}
+}

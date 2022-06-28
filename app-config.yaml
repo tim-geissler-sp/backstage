@@ -40,7 +40,7 @@ integrations:
     - host: github.com
       # This is a Personal Access Token or PAT from GitHub. You can find out how to generate this token, and more information
       # about setting up the GitHub integration here: https://backstage.io/docs/getting-started/configuration#setting-up-a-github-integration
-      token: ${GITHUB_TOKEN}
+      token: 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 #TDG
     ### Example for how to add your GitHub Enterprise instance using the API:
     # - host: ghe.example.net
     #   apiBaseUrl: https://ghe.example.net/api/v3
@@ -87,17 +87,42 @@ catalog:
   locations:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
     - type: file
-      target: ../../examples/entities.yaml
+      target: templates/entities.yaml
 
     # Local example template
     - type: file
-      target: ../../examples/template/template.yaml
+      target: templates/ets/ets-template.yaml
+      rules:
+        - allow: [Template]
+
+    - type: file
+      target: templates/sp-scheduler/sp-scheduler-template.yaml
+      rules:
+        - allow: [Template]
+        
+    - type: file
+      target: templates/ets/ets-template.yaml
+      rules:
+        - allow: [Template]
+
+    - type: file
+      target: templates/cloud-audit/cloud-audit-template.yaml
+      rules:
+        - allow: [Template]
+
+    - type: file
+      target: templates/cloud-notification/cloud-notification-template.yaml
+      rules:
+        - allow: [Template]
+
+    - type: file
+      target: templates/sp-identity-event/sp-identity-event-template.yaml
       rules:
         - allow: [Template]
 
     # Local example organizational data
     - type: file
-      target: ../../examples/org.yaml
+      target: templates/org.yaml
       rules:
         - allow: [User, Group]
 

@@ -1,0 +1,35 @@
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				counter = 'COMPLEXITY'
+				minimum = 0.70
+			}
+		}
+	}
+}
+
+dependencies {
+	api(platform("com.sailpoint:atlas-platform:$project.ATLAS_VERSION"))
+
+	compile(project(":notification-common"))
+	compile(project(":notification-interest-matcher"))
+	compile("com.sailpoint:atlas-dynamodb")
+	compile("com.sailpoint:saas-kafka-topics:$project.KAFKA_TOPICS_VERSION")
+
+	testCompile("com.sailpoint:atlas-test")
+}
+
+task copyNativeDeps(type: Copy) {
+	from(configurations.compile + configurations.testCompile) {
+		include '*.dll'
+		include '*.dylib'
+		include '*.so'
+	}
+	into 'build/libs'
+}
+
+test {
+	dependsOn copyNativeDeps
+	systemProperty "java.library.path", 'build/libs'
+}

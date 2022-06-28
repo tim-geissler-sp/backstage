@@ -1,0 +1,33 @@
+# Workflow to sync ETS docs in repo to Wiki
+
+name: ETS Wiki Sync
+
+# Triggers the workflow on push to the master branch
+on:
+  push:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs wiki page sync
+      # https://github.com/marketplace/actions/wiki-page-creator-action
+      - name: wiki-page-creator-action
+        uses: Decathlon/wiki-page-creator-action@v2.0.0
+        env:
+          ACTION_MAIL: scrum-platform-core-services@sailpoint.com
+          ACTION_NAME: ets-wiki-sync
+          GH_PAT: ${{ secrets.ETS_WIKI_ACTION_KEY }}
+          REPO_NAME: ets
+          MD_FOLDER: docs
+          WIKI_PUSH_MESSAGE: Automated sync of repo docs to wiki
+          OWNER: sailpoint

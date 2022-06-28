@@ -1,0 +1,86 @@
+@Library("sailpoint/jenkins-release-utils")_
+
+parameters {
+    string (name: 'apiUrl',  defaultValue: 'https://echo-prd.api.identitynow.com')
+    string (name: 'username',  defaultValue: 'slpt.support')
+    string (name: 'branch',  defaultValue: 'master')
+    string (name: 'awsRegion',  defaultValue: 'us-east-1')
+}
+
+pipeline {
+    environment {
+        ATLAS_JWT_KEY_PARAM_NAME="/service/oathkeeper/dev/encryption_string"
+        AWS_REGION="${awsRegion}"
+        SLACK_CHANNEL = "#team-eng-platform-core-jnk"
+        SERVICE_NAME = "sp-scheduler"
+    }
+
+    agent {
+        kubernetes {
+            yaml "${libraryResource 'pods/jdk8-container.yaml'}"
+        }
+    }
+
+    stages {
+        stage('Checkout SCM') {
+            steps {
+                checkout(
+                [$class: 'GitSCM',
+                branches: [[name: 'origin/${branch}']],
+                doGenerateSubmoduleConfigurations: false,
+                extensions: [], submoduleCfg: [],
+                userRemoteConfigs: [[credentialsId: 'git-automation-ssh', url: 'git@github.com:sailpoint/sp-scheduler.git']]])
+            }
+        }
+        stage('Run sp-scheduler Karate test cleanup') {
+            steps {
+                container('jdk8') {
+                    assumePodRole {
+                        sh """
+                        cd api-test && ./gradlew :clean :test -Dorg.url=${apiUrl} -DapiUrl=${apiUrl} -Dorg.username=${username} -Dorg.isProd=${isProd} -Dusername=${username} -DisProd=${isProd} -PapiTest=true -Dkarate.options="--tags @cleanup --tags @prod" --info
+                        """
+                    }
+                }
+            }
+        }
+        stage('Run sp-scheduler Karate tests') {
+            steps {
+                container('jdk8') {
+                    assumePodRole {
+                        sh """
+                        cd api-test && ./gradlew :test -Dorg.url=${apiUrl} -DapiUrl=${apiUrl} -Dorg.username=${username} -Dorg.isProd=${isProd} -Dusername=${username} -DisProd=${isProd} -PapiTest=true -Dkarate.options="--tags @prod --tags ~@ignore" --info
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts allowEmptyArchive: true, artifacts: 'api-test/build/surefire-reports/**/*, api-test/build/cucumber-html-reports/**/*', defaultExcludes: false
+        }
+
+        success {
+            sendSlackNotification(
+                env.SLACK_CHANNEL,
+                "${env.SERVICE_NAME} E2E verify prod pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> was successful.",
+                utils.NOTIFY_SUCCESS
+            )
+        }
+        failure {
+            sendSlackNotification(
+                env.SLACK_CHANNEL,
+                "${env.SERVICE_NAME} E2E verify prod pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> failed.",
+                utils.NOTIFY_FAILURE
+            )
+        }
+        aborted {
+            sendSlackNotification(
+                env.SLACK_CHANNEL,
+                "${env.SERVICE_NAME} E2E verify pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> was aborted.",
+                utils.NOTIFY_ABORTED
+            )
+        }
+    }
+}

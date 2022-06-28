@@ -1,0 +1,135 @@
+plugins {
+	id 'org.springframework.boot' version "2.3.12.RELEASE"
+	id "org.flywaydb.flyway" version "6.0.6"
+	id "com.palantir.docker" version "0.22.1"
+}
+
+jar {
+	archivesBaseName = "ets-server"
+	project.version = null
+}
+
+flyway {
+	url = "jdbc:postgresql://localhost:5432/postgres"
+	user = "postgres"
+	password = "2thecloud"
+}
+
+configurations {
+	implementation {
+		exclude group: 'org.slf4j', module:'slf4j-log4j12'
+	}
+}
+
+dependencies {
+	implementation(platform("com.sailpoint:atlas-boot-platform:${project.ATLAS_BOOT_VERSION}"))
+
+	implementation("com.sailpoint:atlas-boot-core")
+	implementation("com.sailpoint:atlas-boot-discovery")
+	implementation("com.sailpoint:atlas-boot-event")
+	implementation("com.sailpoint:atlas-boot-api-common")
+	implementation("com.sailpoint:atlas-boot-messaging")
+	implementation("com.sailpoint:atlas-boot-metrics")
+	implementation("com.sailpoint:atlas-boot-ams-client")
+	implementation("com.sailpoint:atlas-boot-chronicle-client")
+	implementation("com.sailpoint:atlas-boot-usage")
+	implementation("com.sailpoint:atlas-boot-profiling")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("com.vladmihalcea:hibernate-types-52")
+	implementation("org.flywaydb:flyway-core")
+	implementation("org.postgresql:postgresql")
+	implementation("org.modelmapper:modelmapper")
+	implementation("com.amazonaws:aws-java-sdk-lambda")
+	implementation("com.amazonaws:aws-java-sdk-core")
+	implementation("com.amazonaws:aws-java-sdk-eventbridge")
+	implementation("io.github.resilience4j:resilience4j-circuitbreaker:1.7.0")
+	implementation("com.sailpoint:saas-kafka-topics:${project.KAFKA_TOPICS_VERSION}")
+	implementation("com.sailpoint:sp-config-lib:${project.SP_CONFIG_LIB_VERSION}")
+    implementation 'org.projectlombok:lombok:1.18.20'
+
+    testImplementation("com.sailpoint:atlas-boot-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("junit:junit")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.testcontainers:postgresql")
+	testImplementation("org.jeasy:easy-random-core:4.2.0")
+	testImplementation('com.amazonaws:DynamoDBLocal')
+
+	aspect(platform("com.sailpoint:atlas-boot-platform:$project.ATLAS_BOOT_VERSION"))
+	aspect("com.sailpoint:metrics")
+
+	//jaeger traceability
+	implementation("com.sailpoint:atlas-boot-tracing")
+
+    //jsonSchema
+    implementation("org.everit.json:org.everit.json.schema:1.3.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.9.8")
+    implementation("javax.validation:validation-api:1.1.0.CR2")
+}
+this.compileJava.dependsOn(processResources)
+
+task copyDynamoDBLocalDeps(type: Copy) {
+	from(configurations.testRuntimeClasspath) {
+		include "*.dylib"
+		include "*.so"
+		include "*.dll"
+	}
+	into 'build/libs'
+}
+
+test {
+	dependsOn(copyDynamoDBLocalDeps)
+	doFirst {
+		systemProperty 'java.library.path', 'build/libs'
+	}
+}
+
+task('dependenciesList') {
+	doLast {
+		println "Runtime dependencies"
+		def selectedDeps = project.configurations.runtimeClasspath.incoming.resolutionResult.allDependencies.collect { dep ->
+			"${dep.selected}"
+		}
+		selectedDeps.unique().sort().each { println it }
+		sourceSets.main.output.resourcesDir.mkdirs()
+		new File(sourceSets.main.output.resourcesDir, "dependencies.json")
+				.text = "[\"" + selectedDeps.join("\",\"") + "\"]"
+	}
+}
+
+bootJar {
+	manifest {
+		attributes 'Implementation-Title': 'ets'
+		attributes 'Implementation-Version': project.hasProperty('customVersion') ? project['customVersion'] : 'Unavailable'
+		attributes 'Implementation-Vendor' : "SailPoint"
+		attributes 'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date())
+	}
+
+	dependsOn dependenciesList
+}
+
+task preDocker(type:Exec)  {
+	println 'AWS login'
+	commandLine 'sh', './login.sh'
+	ignoreExitValue true
+}
+
+docker {
+	name "${jar.baseName}"
+	tags "latest"
+	dockerfile = file('../dockerfiles/ets-server/Dockerfile')
+	noCache true
+	copySpec.from(jar).into('target')
+}
+
+task publishDocker(type:Exec)  {
+	println 'Push docker'
+	commandLine 'sh', './pushDocker.sh'
+	standardOutput = new ByteArrayOutputStream()
+	ext.output = {
+		return standardOutput.toString()
+	}
+}
+
+docker.dependsOn(preDocker)

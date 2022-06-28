@@ -1,0 +1,252 @@
+{
+	"id": "idn:access-request-post-approval",
+	"name": "Access Request Decision",
+	"type": "FIRE_AND_FORGET",
+	"description": "An access request was approved or denied.",
+	"eventSources": [
+		{
+			"topic": "ACCESS_REQUEST",
+			"eventType": "ACCESS_REQUEST_REVIEWED"
+		}
+	],
+	"inputSchema": {
+		"definitions": {
+			"record:AccessRequestPreApprovalInput": {
+				"type": "object",
+				"required": [
+					"accessRequestId",
+					"requestedFor",
+					"requestedItemsStatus",
+					"requestedBy"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"accessRequestId": {
+						"type": "string"
+					},
+					"requestedFor": {
+						"$ref": "#/definitions/record:requestForIdentityRef"
+					},
+					"requestedItemsStatus": {
+						"type": "array",
+						"items": {
+							"$ref": "#/definitions/record:requestedItemsStatusRef"
+						}
+					},
+					"requestedBy": {
+						"$ref": "#/definitions/record:requestByIdentityRef"
+					}
+				}
+			},
+			"record:requestForIdentityRef": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"type"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					}
+				}
+			},
+			"record:requestedItemsStatusRef": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"type",
+					"operation",
+					"approvalInfo"
+				],
+				"optional": [
+					"description",
+					"comment",
+					"clientMetadata"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"type": {
+						"type": "string"
+					},
+					"operation": {
+						"type": "string"
+					},
+					"comment": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"clientMetadata": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "object",
+								"additionalProperties": {
+									"oneOf": [
+										{
+											"type": "null"
+										},
+										{
+											"type": "string"
+										}
+									]
+								}
+							}
+						]
+					},
+					"approvalInfo": {
+						"type": "array",
+						"items": {
+							"$ref": "#/definitions/record:approvalInfo"
+						}
+					}
+				}
+			},
+			"record:approvalInfo": {
+				"type": "object",
+				"required": [
+					"approvalDecision",
+					"approverName",
+					"approver"
+				],
+				"optional": [
+					"approvalComment"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"approvalComment": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"approvalDecision": {
+						"type": "string"
+					},
+					"approverName": {
+						"type": "string"
+					},
+					"approver": {
+						"$ref": "#/definitions/record:approverIdentityRef"
+					}
+				}
+			},
+			"record:approverIdentityRef": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"type"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					}
+				}
+			},
+			"record:requestByIdentityRef": {
+				"type": "object",
+				"required": [
+					"type",
+					"id",
+					"name"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"type": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:AccessRequestPreApprovalInput"
+	},
+	"exampleInput": {
+		"accessRequestId": "4b4d982dddff4267ab12f0f1e72b5a6d",
+		"requestedItemsStatus": [
+			{
+				"id": "2c91808b6ef1d43e016efba0ce470904",
+				"name": "Engineering Access",
+				"description": "Engineering Access",
+				"type": "ACCESS_PROFILE",
+				"operation": "Add",
+				"clientMetadata": {
+					"applicationName": "My application"
+				},
+				"approvalInfo": [
+					{
+						"approver": {
+							"id": "2c91808b6ef1d43e016efba0ce470910",
+							"name": "Stephen Austin",
+							"type": "IDENTITY"
+						},
+						"approverName": "Stephen.Austin",
+						"approvalDecision": "APPROVED",
+						"approvalComment": " this is an approval comment"
+					}
+				],
+				"comment": "requester comments"
+			}
+		],
+		"requestedBy": {
+			"id": "2c91808b6ef1d43e016efba0ce470906",
+			"name": "Adam Admin",
+			"type": "IDENTITY"
+		},
+		"requestedFor": {
+			"id": "2c91808b6ef1d43e016efba0ce470909",
+			"name": "Ed Engineer",
+			"type": "IDENTITY"
+		}
+	}
+}

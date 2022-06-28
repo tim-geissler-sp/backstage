@@ -1,0 +1,347 @@
+{
+	"id": "idn:certification-signed-off",
+	"name": "Certification Signed Off",
+	"description": "Triggered when a certification is signed off by its reviewer.",
+	"type": "FIRE_AND_FORGET",
+	"eventSources": [
+		{
+			"topic": "CMS",
+			"eventType": "CERTIFICATION_SIGNED_OFF"
+		}
+	],
+	"inputSchema": {
+		"definitions": {
+			"record:CertificationSignOffPayload": {
+				"type": "object",
+				"required": [
+					"certification"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"certification": {
+						"$ref": "#/definitions/record:Certification"
+					}
+				}
+			},
+			"record:Certification": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"created",
+					"campaignRef",
+					"completed",
+					"decisionsMade",
+					"decisionsTotal",
+					"due",
+					"signed",
+					"reviewer",
+					"campaignOwner",
+					"hasErrors",
+					"phase",
+					"entitiesCompleted",
+					"entitiesTotal"
+				],
+				"optional": [
+					"modified",
+					"errorMessage",
+					"reassignment"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"created": {
+						"type": "string"
+					},
+					"modified": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"campaignRef": {
+						"$ref": "#/definitions/record:CampaignRef"
+					},
+					"completed": {
+						"type": "boolean"
+					},
+					"decisionsMade": {
+						"type": "number",
+						"minimum": -2147483648,
+						"maximum": 2147483647
+					},
+					"decisionsTotal": {
+						"type": "number",
+						"minimum": -2147483648,
+						"maximum": 2147483647
+					},
+					"due": {
+						"type": "string"
+					},
+					"signed": {
+						"type": "string"
+					},
+					"reviewer": {
+						"$ref": "#/definitions/record:Reviewer"
+					},
+					"campaignOwner": {
+						"$ref": "#/definitions/record:CampaignOwner"
+					},
+					"reassignment": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"$ref": "#/definitions/record:Reassignment"
+							}
+						]
+					},
+					"hasErrors": {
+						"type": "boolean"
+					},
+					"errorMessage": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"phase": {
+						"$ref": "#/definitions/enum:CertificationPhase"
+					},
+					"entitiesCompleted": {
+						"type": "number",
+						"minimum": -2147483648,
+						"maximum": 2147483647
+					},
+					"entitiesTotal": {
+						"type": "number",
+						"minimum": -2147483648,
+						"maximum": 2147483647
+					}
+				}
+			},
+			"record:CampaignOwner": {
+				"type": "object",
+				"required": [
+					"id",
+					"displayName",
+					"email"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"displayName": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					}
+				}
+			},
+			"record:CampaignRef": {
+				"type": "object",
+				"required": [
+					"id",
+					"type",
+					"name",
+					"description",
+					"campaignType"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"type": {
+						"default": "CAMPAIGN",
+						"$ref": "#/definitions/enum:RefType"
+					},
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"campaignType": {
+						"$ref": "#/definitions/enum:CampaignType"
+					}
+				}
+			},
+			"enum:RefType": {
+				"enum": [
+					"CAMPAIGN"
+				]
+			},
+			"enum:CampaignType": {
+				"enum": [
+					"MANAGER",
+					"SOURCE_OWNER",
+					"SEARCH",
+					"ROLE_COMPOSITION"
+				]
+			},
+			"record:Reviewer": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"type"
+				],
+                "optional": [
+                    "email"
+                ],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"type": {
+						"$ref": "#/definitions/enum:ReviewerType"
+					}
+				}
+			},
+			"enum:ReviewerType": {
+				"enum": [
+					"IDENTITY",
+					"GOVERNANCE_GROUP"
+				]
+			},
+			"record:Reassignment": {
+				"type": "object",
+				"required": [
+					"from",
+					"comment"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"from": {
+						"$ref": "#/definitions/record:CertificationRef"
+					},
+					"comment": {
+						"type": "string"
+					}
+				}
+			},
+			"record:CertificationRef": {
+				"type": "object",
+				"required": [
+					"type",
+					"id",
+					"name",
+					"reviewer"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"type": {
+						"$ref": "#/definitions/enum:CertificationRefType"
+					},
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"reviewer": {
+						"$ref": "#/definitions/record:Reviewer"
+					}
+				}
+			},
+			"enum:CertificationRefType": {
+				"enum": [
+					"CERTIFICATION"
+				]
+			},
+			"enum:CertificationPhase": {
+				"enum": [
+					"SIGNED"
+				]
+			}
+		},
+		"$ref": "#/definitions/record:CertificationSignOffPayload"
+	},
+	"outputSchema": null,
+	"exampleInput": {
+		"certification": {
+			"id": "2c91808576f886190176f88caf0d0067",
+			"name": "Manager Access Review for Alice Baker",
+			"created": "2020-02-16T03:04:45.815Z",
+			"modified": null,
+			"campaignRef": {
+				"campaignType": "MANAGER",
+				"description": "Audit access for all employees.",
+				"type": "CAMPAIGN",
+				"id": "2c91808576f886190176f88cac5a0010",
+				"name": "Manager Access Campaign"
+			},
+			"completed": true,
+			"hasErrors": false,
+			"errorMessage": null,
+			"decisionsMade": 50,
+			"decisionsTotal": 50,
+			"due": "2020-03-16T03:04:45.815Z",
+			"signed": "2020-03-04T03:04:45.815Z",
+			"reviewer": {
+				"name": "Reviewers group",
+				"id": "6a80311c-8d11-40bc-a3c8-29e2360b85e8",
+				"type": "GOVERNANCE_GROUP",
+				"email": null
+			},
+			"campaignOwner": {
+				"id": "37f080867702c1910177031320c40n27",
+				"displayName": "John Snow",
+				"email": "john.snow@example.com"
+			},
+			"reassignment": {
+				"comment": "Changing reviewer.",
+				"from": {
+					"id": "8a89c6de77ef762f0177ef7f52f10004",
+					"name": "Manger Access Review for Charlie Davis",
+					"type": "CERTIFICATION",
+					"reviewer": {
+						"id": "2c9180867702c1910177031320c4010c",
+						"name": "Charlie Davis",
+						"type": "IDENTITY",
+						"email": "charlie.davis@example.com"
+					}
+				}
+			},
+			"phase": "SIGNED",
+			"entitiesCompleted": 12,
+			"entitiesTotal": 12
+		}
+	},
+	"exampleOutput": null
+}

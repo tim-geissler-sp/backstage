@@ -1,0 +1,154 @@
+{
+	"id": "idn:va-cluster-status-change",
+	"name": "VA Cluster Status Change Event",
+	"description": "The VA Cluster Status Change event triggers whenever a particular VA Cluster changes status",
+	"type": "FIRE_AND_FORGET",
+	"eventSources": [
+		{
+			"topic": "SOURCE",
+			"eventType": "VA_CLUSTER_STATUS_CHANGE"
+		}
+	],
+	"inputSchema": {
+		"definitions": {
+			"record:VAClusterStatusChangeEvent": {
+				"type": "object",
+				"required": [
+					"created",
+					"type",
+					"application",
+					"healthCheckResult",
+					"previousHealthCheckResult"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"created": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					},
+					"application": {
+						"$ref": "#/definitions/record:applicationInfo"
+					},
+					"healthCheckResult": {
+						"$ref": "#/definitions/record:healthCheckResultInfo"
+					},
+					"previousHealthCheckResult": {
+						"$ref": "#/definitions/record:previousHealthCheckResultInfo"
+					}
+				}
+			},
+			"record:applicationInfo": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"attributes"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"attributes": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"$ref": "#/definitions/record:Attributes"
+							}
+						]
+					}
+				}
+			},
+			"record:Attributes": {
+				"type": "object",
+				"optional": ["clusterId"],
+				"required": [
+				],
+				"additionalProperties": true,
+				"properties": {
+					"clusterId": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					}
+				}
+			},
+			"record:healthCheckResultInfo": {
+				"type": "object",
+				"required": [
+					"message",
+					"resultType",
+					"status"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"resultType": {
+						"type": "string"
+					},
+					"status": {
+						"type": "string"
+					}
+				}
+			},
+			"record:previousHealthCheckResultInfo": {
+				"type": "object",
+				"required": [
+					"message",
+					"resultType",
+					"status"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"resultType": {
+						"type": "string"
+					},
+					"status": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:VAClusterStatusChangeEvent"
+	},
+	"exampleInput": {
+		"created": "2020-06-29T22:01:50.474Z",
+		"type": "Source",
+		"application": {
+			"id": "2c9180866166b5b0016167c32ef31a66",
+			"name": "Production VA Cluster",
+			"attributes": {
+				"clusterId": "2c9180866166b5b0016167c32ef31a66"
+			}
+		},
+		"healthCheckResult": {
+			"status": "Failed",
+			"resultType": "SOURCE_STATE_FAILURE_SOURCE",
+			"message": " Test Connection failed with exception.  Error message - java.lang.Exception"
+		},
+		"previousHealthCheckResult": {
+			"status": "Failed",
+			"resultType": "SOURCE_STATE_HEALTHY",
+			"message": "nothing bad happened"
+		}
+	}
+}

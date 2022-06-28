@@ -1,0 +1,15 @@
+{
+  "completed": null,
+  "completionStatus": null,
+  "created": 1644518947172,
+  "description": "Extract query data from ElasticSearch to CSV",
+  "id": "2c9180857ee01176017ee4f7b9643025",
+  "launched": null,
+  "launcher": "support",
+  "messages": [],
+  "name": "Search Export",
+  "parentName": null,
+  "progress": null,
+  "returns": [],
+  "type": "QUARTZ"
+}

@@ -1,0 +1,215 @@
+{
+	"id": "idn:account-correlated",
+	"name": "Account Correlated",
+	"description": "Trigger when an account is newly added to an identity",
+	"type": "FIRE_AND_FORGET",
+	"eventSources": [
+		{
+			"topic": "IDENTITY_EVENT",
+			"eventType": "IdentityAccountCorrelatedEvent"
+		}
+	],
+	"inputSchema": {
+		"definitions": {
+			"record:IdentityAccountCorrelatedEvent": {
+				"type": "object",
+				"required": [
+					"identity",
+					"source",
+					"account",
+					"attributes"
+				],
+				"optional": [
+					"entitlementCount"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"identity": {
+						"$ref": "#/definitions/record:IdentityReference"
+					},
+					"source": {
+						"$ref": "#/definitions/record:SourceReference"
+					},
+					"account": {
+						"$ref": "#/definitions/record:AccountReference"
+					},
+					"attributes": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"$ref": "#/definitions/record:Attributes"
+							}
+						]
+					},
+					"entitlementCount": {
+						"type": "number"
+					}
+				}
+			},
+			"record:IdentityReference": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"type"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					}
+				}
+			},
+			"record:SourceReference": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"type"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					}
+				}
+			},
+			"record:AccountReference": {
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"nativeIdentity",
+					"type"
+				],
+				"optional": [
+					"uuid"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"uuid": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"name": {
+						"type": "string"
+					},
+					"nativeIdentity": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					}
+				}
+			},
+			"record:Attributes": {
+				"type": "object",
+				"required": [
+					"givenName",
+					"memberOf",
+					"sn"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"givenName": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"memberOf": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "array",
+								"items": {
+									"oneOf": [
+										{
+											"type": "null"
+										},
+										{
+											"type": "string"
+										}
+									]
+								}
+							}
+						]
+					},
+					"sn": {
+						"default": null,
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"type": "string"
+							}
+						]
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:IdentityAccountCorrelatedEvent"
+	},
+	"exampleInput": {
+		"identity": {
+			"id": "ee769173319b41d19ccec6cea52f237b",
+			"name": "john.doe",
+			"type": "IDENTITY"
+		},
+		"source": {
+			"id": "904852b7c54143ebb824042ee406a393",
+			"name": "Employee AD",
+			"type": "SOURCE"
+		},
+		"account": {
+			"id": "52170a74-ca89-11ea-87d0-0242ac130003",
+			"uuid": null,
+			"nativeIdentity": "cn=john.doe,ou=users,dc=acme,dc=com",
+			"name": "john.doe",
+			"type": "ACCOUNT"
+		},
+		"attributes": {
+			"sn": "doe",
+			"givenName": "john",
+			"memberOf": [
+				"cn=g1,ou=groups,dc=acme,dc=com",
+				"cn=g2,ou=groups,dc=acme,dc=com",
+				"cn=g3,ou=groups,dc=acme,dc=com"
+			]
+		},
+		"entitlementCount": 0
+	}
+}

@@ -1,0 +1,121 @@
+{
+	"id": "idn:account-aggregation-completed",
+	"name": "Account Aggregation Completed",
+	"type": "FIRE_AND_FORGET",
+	"description": "An account aggregation completed, was terminated, or failed.",
+	"inputSchema": {
+		"type" : "record",
+		"name" : "AccountAggregationCompletedInput",
+		"fields" : [
+			{
+				"name": "source",
+				"type": {
+					"name": "sourceRef",
+					"type": "record",
+					"fields": [
+						{
+							"name": "type",
+							"type": "string"
+						},
+						{
+							"name": "id",
+							"type": "string"
+						},
+						{
+							"name": "name",
+							"type": "string"
+						}
+					]
+				}
+			},
+			{
+				"name" : "status",
+				"type" : "string"
+			},
+			{
+				"name" : "started",
+				"type" : "string"
+			},
+			{
+				"name" : "completed",
+				"type" : "string"
+			},
+			{
+				"name": "errors",
+				"type": [
+					{
+						"type": "array",
+						"items": [
+							"null",
+							"string"
+						]
+					},
+					"null"
+				]
+			},
+			{
+				"name": "warnings",
+				"type": [
+					{
+						"type": "array",
+						"items": [
+							"null",
+							"string"
+						]
+					},
+					"null"
+				]
+			},
+			{
+				"name": "stats",
+				"type": {
+					"name": "AccountAggregationCompletedStats",
+					"type": "record",
+					"fields": [
+						{
+							"name": "scanned",
+							"type": "int"
+						},
+						{
+							"name": "unchanged",
+							"type": "int"
+						},
+						{
+							"name": "changed",
+							"type": "int"
+						},
+						{
+							"name": "added",
+							"type": "int"
+						},
+						{
+							"name": "removed",
+							"type": "int"
+						}
+					]
+				}
+			}
+		]
+	},
+	"exampleInput": {
+		"source": {
+			"id": "4e4d982dddff4267ab12f0f1e72b5a6d",
+			"name": "Corporate Active Directory",
+			"type": "SOURCE"
+		},
+		"status": "Success",
+		"started": "2020-06-29T22:01:50.474Z",
+		"completed": "2020-06-29T22:02:04.090Z",
+		"errors": [],
+		"warnings": [
+			"Account skipped"
+		],
+		"stats": {
+			"scanned": 200,
+			"unchanged": 190,
+			"changed": 6,
+			"added": 4,
+			"removed": 3
+		}
+	}
+}

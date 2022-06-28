@@ -1,0 +1,17 @@
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				counter = 'COMPLEXITY'
+				minimum = 0.90
+			}
+		}
+	}
+}
+
+dependencies {
+	api(platform("com.sailpoint:atlas-platform:$project.ATLAS_VERSION"))
+
+	testCompile("junit:junit")
+	testCompile("org.mockito:mockito-core")
+}

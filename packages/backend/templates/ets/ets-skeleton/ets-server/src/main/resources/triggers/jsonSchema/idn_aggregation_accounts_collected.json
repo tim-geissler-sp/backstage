@@ -1,0 +1,160 @@
+{
+	"id": "idn:aggregation-accounts-collected",
+	"name": "Accounts Collected for Aggregation",
+	"type": "FIRE_AND_FORGET",
+	"description": "New, changed, and deleted accounts have been gathered during an aggregation and are being processed.",
+	"inputSchema": {
+		"definitions": {
+			"record:AggregationAccountsCollectedInput": {
+				"type": "object",
+				"required": [
+					"source",
+					"status",
+					"started",
+					"completed",
+					"errors",
+					"warnings",
+					"stats"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"source": {
+						"$ref": "#/definitions/record:sourceRef"
+					},
+					"status": {
+						"type": "string"
+					},
+					"started": {
+						"type": "string"
+					},
+					"completed": {
+						"type": "string"
+					},
+					"errors": {
+						"oneOf": [
+							{
+								"type": "array",
+								"items": {
+									"oneOf": [
+										{
+											"type": "null"
+										},
+										{
+											"type": "string"
+										}
+									]
+								}
+							},
+							{
+								"type": "null"
+							}
+						]
+					},
+					"warnings": {
+						"oneOf": [
+							{
+								"type": "array",
+								"items": {
+									"oneOf": [
+										{
+											"type": "null"
+										},
+										{
+											"type": "string"
+										}
+									]
+								}
+							},
+							{
+								"type": "null"
+							}
+						]
+					},
+					"stats": {
+						"$ref": "#/definitions/record:AggregationAccountsCollectedStats"
+					}
+				}
+			},
+			"record:sourceRef": {
+				"type": "object",
+				"required": [
+					"type",
+					"id",
+					"name"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"type": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				}
+			},
+			"record:AggregationAccountsCollectedStats": {
+				"type": "object",
+				"required": [
+					"scanned",
+					"unchanged",
+					"changed",
+					"added",
+					"removed"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"scanned": {
+						"type": "number",
+						"minimum": 0,
+						"maximum": 2147483647
+					},
+					"unchanged": {
+						"type": "number",
+						"minimum": 0,
+						"maximum": 2147483647
+					},
+					"changed": {
+						"type": "number",
+						"minimum": 0,
+						"maximum": 2147483647
+					},
+					"added": {
+						"type": "number",
+						"minimum": 0,
+						"maximum": 2147483647
+					},
+					"removed": {
+						"type": "number",
+						"minimum": 0,
+						"maximum": 2147483647
+					}
+				}
+			}
+		},
+		"$ref": "#/definitions/record:AggregationAccountsCollectedInput"
+	},
+	"exampleInput": {
+		"source": {
+			"id": "4e4d982dddff4267ab12f0f1e72b5a6d",
+			"name": "Corporate Active Directory",
+			"type": "SOURCE"
+		},
+		"status": "Success",
+		"started": "2020-06-29T22:01:50.474Z",
+		"completed": "2020-06-29T22:02:04.090Z",
+		"errors": [],
+		"warnings": [
+			"Account skipped"
+		],
+		"stats": {
+			"scanned": 200,
+			"unchanged": 190,
+			"changed": 6,
+			"added": 4,
+			"removed": 3
+		}
+	}
+}

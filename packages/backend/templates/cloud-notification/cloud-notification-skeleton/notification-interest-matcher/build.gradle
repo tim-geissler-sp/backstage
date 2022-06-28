@@ -1,0 +1,19 @@
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				counter = 'COMPLEXITY'
+				minimum = 0.67
+			}
+		}
+	}
+}
+
+dependencies {
+	api(platform("com.sailpoint:atlas-platform:$project.ATLAS_VERSION"))
+
+	compile(project(":notification-common"))
+	compile("com.sailpoint:saas-kafka-topics:$project.KAFKA_TOPICS_VERSION")
+
+	testCompile("com.sailpoint:atlas-test")
+}

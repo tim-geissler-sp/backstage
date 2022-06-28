@@ -1,0 +1,36 @@
+{
+  "schema": 2,
+  "tests": [
+    {
+      "friendly_test_name": "Hermes Canary tests",
+      "job_name": "hermes/hermes-verify-prod",
+      "remote_server": "platform-core",
+      "release_stage": "canary",
+      "job_params": {
+        "podUrl": "https://hermesusw2-vrf.identitynow.com",
+        "testOrg": "hermesusw2-vrf"
+      }
+    },
+    {
+      "friendly_test_name": "Hermes Prod tests",
+      "job_name": "hermes/hermes-verify-prod",
+      "remote_server": "platform-core",
+      "release_stage": "prod",
+      "job_params": {
+        "podUrl": "https://echo-prd.identitynow.com",
+        "testOrg": "echo-prd"
+      }
+    }
+  ],
+  "notifications": {
+    "slack": {
+      "rooms": [ "#team-eng-platform-core-jnk" ],
+      "failureRooms": [ "team-eng-platform-core" ]
+    },
+    "email": {
+      "addresses": [ "scrum-platform-core-services@sailpoint.com" ],
+      "emailOnlyOnFailure": true
+    }
+  },
+  "product": "SaaS Platform"
+}
