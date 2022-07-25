@@ -1,8 +1,0 @@
-{
-	"owner":"platform-core",
-	"description":"Hermes is the SaaS Notification Service. It interacts with other services asynchronously via atlas events, and has REST APIs to manage templates and some user preferences.",
-	"links": {
-		"github": "https://github.com/sailpoint/cloud-notification",
-		"jenkins construct": "https://construct.identitysoon.com/view/hermes/"
-	}
-}

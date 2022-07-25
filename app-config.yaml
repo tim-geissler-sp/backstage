@@ -40,7 +40,7 @@ integrations:
     - host: github.com
       # This is a Personal Access Token or PAT from GitHub. You can find out how to generate this token, and more information
       # about setting up the GitHub integration here: https://backstage.io/docs/getting-started/configuration#setting-up-a-github-integration
-      token: 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 #TDG
+      token: ${GITHUB_TOKEN}
     ### Example for how to add your GitHub Enterprise instance using the API:
     # - host: ghe.example.net
     #   apiBaseUrl: https://ghe.example.net/api/v3
@@ -95,30 +95,26 @@ catalog:
       rules:
         - allow: [Template]
 
-    - type: file
-      target: templates/sp-scheduler/sp-scheduler-template.yaml
-      rules:
-        - allow: [Template]
-        
-    - type: file
-      target: templates/ets/ets-template.yaml
+    - type: url
+      target: https://github.com/sailpoint/saas-backstage-templates/blob/master/atlas-go-web-handler/web-handler-template.yaml
       rules:
         - allow: [Template]
 
-    - type: file
-      target: templates/cloud-audit/cloud-audit-template.yaml
-      rules:
+    - type: url
+      target: https://github.com/sailpoint/saas-backstage-templates/blob/master/atlas-go-event-handler-template/atlas-go-event-handler-template.yaml
+      rules: 
         - allow: [Template]
 
-    - type: file
-      target: templates/cloud-notification/cloud-notification-template.yaml
-      rules:
+    - type: url
+      target: https://github.com/sailpoint/saas-backstage-templates/blob/master/saas-connector/saas-connector-template.yaml
+      rules: 
         - allow: [Template]
-
-    - type: file
-      target: templates/sp-identity-event/sp-identity-event-template.yaml
-      rules:
-        - allow: [Template]
+    
+    # Static location for SP org
+    - type: github-org
+      target: https://github.com/sailpoint
+      rules: 
+        - allow: [User, Group]
 
     # Local example organizational data
     - type: file

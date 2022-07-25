@@ -1,4 +1,0 @@
-include ":sp-identity-event-api-test"
-include 'sp-identity-event-api'
-include ":sp-identity-event-server"
-

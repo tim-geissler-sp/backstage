@@ -1,8 +1,0 @@
-{
-	"owner": "platform-core",
-	"description": "SP Identity Event Server (sp-identity-event) is a microservice that watches the IDENTITY_CHANGED and IDENTITY_DELETED events from IdentityNow and exposes more granular events to the rest of the system.",
-	"links": {
-		"github": "https://github.com/sailpoint/sp-identity-event",
-		"jenkins construct": "https://construct.identitysoon.com/view/sp-identity-event/"
-	}
-}

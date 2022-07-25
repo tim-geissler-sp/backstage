@@ -1,0 +1,22 @@
+version: '3'
+services:
+  backend:
+    image: spbs-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.build
+    environment:
+      GITHUB_TOKEN: "${GITHUB_TOKEN}"
+      AUTH_GITHUB_CLIENT_ID: "${AUTH_GITHUB_CLIENT_ID}"
+      AUTH_GITHUB_CLIENT_SECRET: "{AUTH_GITHUB_CLIENT_SECRET}"
+    ports:
+      - '7007:7007'
+  frontend:
+    image: spbs-backend
+    build:
+      context: .
+      dockerfile: Dockerfile.backend.build
+    environment:
+      SSL_PORT: 443
+    ports:
+      - '3000:80'

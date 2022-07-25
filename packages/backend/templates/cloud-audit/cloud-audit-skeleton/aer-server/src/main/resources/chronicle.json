@@ -1,9 +1,0 @@
-{
-	"owner": "pltdp",
-	"description": "Mantis platform based microservice that facilitates running/retrieving audit event/reports (AER).",
-	"links": {
-		"github": "https://github.com/sailpoint/cloud-audit",
-		"jenkins construct": "https://construct.identitysoon.com/view/AER/",
-		"troubleshooting": "https://github.com/sailpoint/cloud-audit/wiki/AER-troubleshooting"
-	}
-}

@@ -35,7 +35,7 @@ AUTH_GITHUB_CLIENT_SECRET=[your_client_secret]
 ## Manual
 1. Clone and navigate into the repository.
 ```
-git clone --depth 1 https://github.com/tim-geissler-sp/backstage.git -o [DIRECTORY_NAME]
+git clone --depth 1 https://github.com/tim-geissler-sp/backstage.git [DIRECTORY_NAME]
 cd [DIRECTORY_NAME]
 ```
 
@@ -49,10 +49,32 @@ yarn install
 yarn dev
 ```
 ## Docker Setup
-The root Dockerfile is configured for a Multi-stage Build.
-Build the Docker image using ```docker image build -t backstage .``` from project root,
-and execute a container locally using ```docker run -it -p 7007:7007 backstage``` (Backstage will be accessible through port 7007 - ```http://localhost:7007```),
+SailPoint Backstage is partitioned into two Docker containers - one for running the backend (server, auth, and database) and one for provisioning the frontend (static HTML, CSS and JS files) and proxying the traffic through an NGINX middleware.
 
+### Building and running containers
+
+```docker-compose build```
+
+```docker-compose up --remove-orphans```
+
+### Building containers separately
+
+**Frontend**
+
+```docker build -t [CONTAINER_NAME] -f Dockerfile.frontend.build .```
+
+**Backend**
+```docker build -t [CONTAINER_NAME] -f Dockerfile.backend.build .```
+
+### Running containers separately
+
+**Frontend**
+
+```docker run -it -p 7007:7007 [FRONTEND_CONTAINER_NAME]```
+
+**Backend**
+
+```docker run -it -p 3000:80 [BACKEND_CONTAINER_NAME]```
 
 ## Note for Apple Silicon: 
 - Run all commands through a Rosetta 2 terminal with the prefix ```arch -x86_64```,
